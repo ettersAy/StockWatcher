@@ -4,13 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>Tech Stocks</title>
+  <title>Stock Watchlist</title>
   <style>
     *{box-sizing:border-box} body{margin:0;background:#101113;color:#f6f7f9;font:16px/1.5 system-ui,sans-serif}
     main{max-width:1060px;margin:auto;padding:clamp(20px,5vw,54px) 16px 40px}
     .top{margin:0 0 20px}.eyebrow{color:#bbc4ff;font-size:.75rem;letter-spacing:.16em;font-weight:700;text-transform:uppercase;margin:0}
     h1{margin:3px 0 4px;font-size:clamp(2rem,5vw,3.35rem);line-height:1.1;letter-spacing:-.045em}
     .note{color:#b9bdc7;margin:8px 0 0;font-size:.91rem} .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:15px}
+    .group{margin:25px 0 32px}.group-title{font-size:1.25rem;margin:0 0 10px;letter-spacing:-.02em}
     article{min-width:0;background:#16181c;border:1px solid #30333b;border-radius:18px;padding:15px;overflow:hidden}
     .card-head{display:flex;align-items:center;gap:12px;margin-bottom:10px} .badge{padding:6px 8px;border-radius:8px;background:#25293a;color:#d7ddff;font:700 .74rem/1.2 ui-monospace,monospace}
     h2{font-size:1.04rem;margin:0} .exchange{color:#aeb4c2;font-size:.75rem;margin-left:auto;white-space:nowrap}
@@ -24,16 +25,24 @@
   <main>
     <header class="top">
       <p class="eyebrow">Market watch</p>
-      <h1>Tech Stocks</h1>
+      <h1>Stock Watchlist</h1>
       <p class="note">U.S. stocks · USD · Quotes may be delayed</p>
     </header>
-    <section id="watchlist" class="grid" aria-label="Stock watchlist"></section>
+    <section class="group" aria-labelledby="tech-title">
+      <h2 class="group-title" id="tech-title">Technology &amp; growth</h2>
+      <div id="watchlist" class="grid"></div>
+    </section>
+    <section class="group" aria-labelledby="leaders-title">
+      <h2 class="group-title" id="leaders-title">Established companies beyond tech</h2>
+      <div id="leaders" class="grid"></div>
+      <p class="note">A price drop is a reason to research, not a buy signal. Even large companies may not recover.</p>
+    </section>
     <noscript><p>Enable JavaScript to see the stock cards.</p></noscript>
     <footer class="note">Prices and charts are displayed by TradingView. If a chart doesn’t load, open its symbol link.</footer>
   </main>
   <template id="card">
     <article>
-      <header class="card-head"><span class="badge"></span><h2></h2><span class="exchange">NASDAQ</span></header>
+      <header class="card-head"><span class="badge"></span><h2></h2><span class="exchange"></span></header>
       <div class="tradingview-widget-container">
         <div class="tradingview-widget-container__widget"></div>
         <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener noreferrer" target="_blank"></a> by TradingView</div>
@@ -45,14 +54,25 @@
       ['ANT', 'Anthropic'], ['MSFT', 'Microsoft'], ['GOOGL', 'Alphabet (Google)'],
       ['AAPL', 'Apple'], ['NVDA', 'NVIDIA'], ['AMZN', 'Amazon'], ['META', 'Meta'], ['TSLA', 'Tesla']
     ];
-    const watchlist = document.querySelector('#watchlist');
+    const leaders = [
+      ["NYSE","BRK.B","Berkshire Hathaway"],
+      ["NYSE","JPM","JPMorgan Chase"],
+      ["NYSE","V","Visa"],
+      ["NASDAQ","COST","Costco"],
+      ["NYSE","PG","Procter & Gamble"],
+      ["NYSE","KO","Coca-Cola"],
+      ["NYSE","JNJ","Johnson & Johnson"],
+      ["NYSE","XOM","Exxon Mobil"],
+      ["NYSE","CAT","Caterpillar"],
+      ["NYSE","UNP","Union Pacific"]
+    ];
     const template = document.querySelector('#card');
     function mount(container) {
       const embed = document.createElement('script');
       embed.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
       embed.async = true;
       embed.textContent = JSON.stringify({
-        symbols: [[container.dataset.company, 'NASDAQ:' + container.dataset.symbol + '|1D']],
+        symbols: [[container.dataset.company, container.dataset.exchange + ':' + container.dataset.symbol + '|1D']],
         chartOnly: false, width: '100%', height: '100%', locale: 'en',
         colorTheme: 'dark', isTransparent: true, autosize: true,
         showVolume: false, showMA: false, showLabels: false, showDateRanges: true,
@@ -67,19 +87,25 @@
         mount(entry.target);
       }
     }, {rootMargin:'240px'}) : null;
-    for (const [symbol, company] of stocks) {
+    function addCard(list, exchange, symbol, company) {
       const card = template.content.firstElementChild.cloneNode(true);
       card.querySelector('.badge').textContent = symbol;
       card.querySelector('h2').textContent = company;
+      card.querySelector('.exchange').textContent = exchange;
       const link = card.querySelector('a');
-      link.href = 'https://www.tradingview.com/symbols/NASDAQ-' + symbol + '/';
+      link.href = 'https://www.tradingview.com/symbols/' + exchange + '-' + symbol + '/';
       link.textContent = symbol + ' chart';
       const container = card.querySelector('.tradingview-widget-container');
       container.dataset.company = company;
       container.dataset.symbol = symbol;
-      watchlist.append(card);
+      container.dataset.exchange = exchange;
+      list.append(card);
       if (lazy) lazy.observe(container); else mount(container);
     }
+    const techList = document.querySelector('#watchlist');
+    const leaderList = document.querySelector('#leaders');
+    for (const [symbol, company] of stocks) addCard(techList, 'NASDAQ', symbol, company);
+    for (const stock of leaders) addCard(leaderList, ...stock);
   </script>
 </body>
 </html>
