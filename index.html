@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Tech Stocks</title>
+  <style>
+    *{box-sizing:border-box} body{margin:0;background:#101113;color:#f6f7f9;font:16px/1.5 system-ui,sans-serif}
+    main{max-width:1060px;margin:auto;padding:clamp(20px,5vw,54px) 16px 40px}
+    .top{margin:0 0 20px}.eyebrow{color:#bbc4ff;font-size:.75rem;letter-spacing:.16em;font-weight:700;text-transform:uppercase;margin:0}
+    h1{margin:3px 0 4px;font-size:clamp(2rem,5vw,3.35rem);line-height:1.1;letter-spacing:-.045em}
+    .note{color:#b9bdc7;margin:8px 0 0;font-size:.91rem} .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:15px}
+    article{min-width:0;background:#16181c;border:1px solid #30333b;border-radius:18px;padding:15px;overflow:hidden}
+    .card-head{display:flex;align-items:center;gap:12px;margin-bottom:10px} .badge{padding:6px 8px;border-radius:8px;background:#25293a;color:#d7ddff;font:700 .74rem/1.2 ui-monospace,monospace}
+    h2{font-size:1.04rem;margin:0} .exchange{color:#aeb4c2;font-size:.75rem;margin-left:auto;white-space:nowrap}
+    .tradingview-widget-container{height:335px;position:relative}.tradingview-widget-container__widget{height:calc(100% - 24px)}
+    .tradingview-widget-copyright{font-size:12px;line-height:24px;color:#b9bdc7}
+    a{color:#bbc4ff} a:focus-visible{outline:2px solid #bbc4ff;outline-offset:3px} footer{margin-top:16px}
+    @media(max-width:420px){article{padding:11px}.tradingview-widget-container{height:306px}}
+  </style>
+</head>
+<body>
+  <main>
+    <header class="top">
+      <p class="eyebrow">Market watch</p>
+      <h1>Tech Stocks</h1>
+      <p class="note">U.S. stocks · USD · Quotes may be delayed</p>
+    </header>
+    <section id="watchlist" class="grid" aria-label="Stock watchlist"></section>
+    <noscript><p>Enable JavaScript to see the stock cards.</p></noscript>
+    <footer class="note">Prices and charts are displayed by TradingView. If a chart doesn’t load, open its symbol link.</footer>
+  </main>
+  <template id="card">
+    <article>
+      <header class="card-head"><span class="badge"></span><h2></h2><span class="exchange">NASDAQ</span></header>
+      <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+        <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener noreferrer" target="_blank"></a> by TradingView</div>
+      </div>
+    </article>
+  </template>
+  <script>
+    const stocks = [
+      ['ANT', 'Anthropic'], ['MSFT', 'Microsoft'], ['GOOGL', 'Alphabet (Google)'],
+      ['AAPL', 'Apple'], ['NVDA', 'NVIDIA'], ['AMZN', 'Amazon'], ['META', 'Meta'], ['TSLA', 'Tesla']
+    ];
+    const watchlist = document.querySelector('#watchlist');
+    const template = document.querySelector('#card');
+    function mount(container) {
+      const embed = document.createElement('script');
+      embed.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
+      embed.async = true;
+      embed.textContent = JSON.stringify({
+        symbols: [[container.dataset.company, 'NASDAQ:' + container.dataset.symbol + '|1D']],
+        chartOnly: false, width: '100%', height: '100%', locale: 'en',
+        colorTheme: 'dark', isTransparent: true, autosize: true,
+        showVolume: false, showMA: false, showLabels: false, showDateRanges: true,
+        hideDateRanges: false, hideMarketStatus: false, hideSymbolLogo: false,
+        showOHLC: true, chartType: 'area', dateRanges: ['1d|1', '1m|60', '1y|1D']
+      });
+      container.append(embed);
+    }
+    const lazy = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) {
+        lazy.unobserve(entry.target);
+        mount(entry.target);
+      }
+    }, {rootMargin:'240px'}) : null;
+    for (const [symbol, company] of stocks) {
+      const card = template.content.firstElementChild.cloneNode(true);
+      card.querySelector('.badge').textContent = symbol;
+      card.querySelector('h2').textContent = company;
+      const link = card.querySelector('a');
+      link.href = 'https://www.tradingview.com/symbols/NASDAQ-' + symbol + '/';
+      link.textContent = symbol + ' chart';
+      const container = card.querySelector('.tradingview-widget-container');
+      container.dataset.company = company;
+      container.dataset.symbol = symbol;
+      watchlist.append(card);
+      if (lazy) lazy.observe(container); else mount(container);
+    }
+  </script>
+</body>
+</html>
