@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Stock Watch · Market Matrix</title><meta name="description" content="Compare 18 stocks together in one compact market matrix.">
+<title>Stock Watch · 3-view dashboard</title><meta name="description" content="Compare 18 stocks in a compact matrix, look for notable moves, or focus on one chart.">
 <style>
 :root{color-scheme:dark;--bg:#0a101b;--panel:#111b2a;--subpanel:#152237;--rule:#29394f;--ink:#f0f6ff;--muted:#a6b7cf;--blue:#a9c7ff;--gain:#6ee7bc;--loss:#ff9ca9;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}*{box-sizing:border-box}
 body{margin:0;background:radial-gradient(ellipse at 72% 0%,#1b3050 0,transparent 42%) var(--bg);color:var(--ink);font:16px/1.4 system-ui,sans-serif}
@@ -14,16 +14,38 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,su
 input,select{height:36px;padding:0 9px;font-size:14px}input{width:184px;max-width:100%}.label{font-size:13px;color:var(--muted);display:block;margin-bottom:3px}.sr{width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;position:absolute}
 table{border-collapse:collapse;width:100%;white-space:nowrap}th,td{text-align:right;padding:5px 12px;border-top:1px solid #243349}th{background:var(--subpanel);color:var(--muted);font-size:13px}th button{border:0;background:transparent;color:inherit;padding:3px 0}th[aria-sort] button{color:#d8e7ff}td{height:35px;font-size:14px}tbody tr:hover{background:#17253a}th:first-child,td:first-child{text-align:left;padding-left:15px}th:last-child,td:last-child{padding-right:15px}
 .sym{font:750 14px var(--mono);color:var(--ink);display:inline-block;min-width:53px;letter-spacing:-.045em}.company{color:var(--muted);font-size:13px}.open{border:0;background:none;padding:3px 0;text-align:left;border-radius:2px}.open:hover .sym{color:var(--blue);text-decoration:underline}.num{font-variant-numeric:tabular-nums}.gain{color:var(--gain)}.loss{color:var(--loss)}.flat,.na{color:var(--muted)}.change{font-weight:700}.trend{display:inline-block;width:62px;height:23px;vertical-align:middle}.matrix-region{overflow:auto}
-.note{padding:9px 15px;border-top:1px solid var(--rule)}.message{padding:20px 15px;border-top:1px solid var(--rule);font-size:14px;color:var(--muted)}.tv{border-top:1px solid var(--rule);min-height:55px}.tv .tradingview-widget-copyright,.chart .tradingview-widget-copyright{font-size:13px;color:var(--muted);padding:5px 12px;text-align:right}.tv iframe,.chart iframe{display:block;border:0;max-width:100%}.chart{height:325px}.chart .tradingview-widget-container__widget{height:calc(100% - 28px)}.chartControl{margin-top:13px}.chartControl .bar h2:focus{outline:none}.charthead{display:flex;gap:8px;align-items:baseline}.charthead h2{font-size:20px}.chartcontrol-link,.close{font-size:13px}.close{padding:4px 8px;font-size:13px}.source{margin-top:10px}.stack{display:flex;gap:8px;align-items:center}.error{padding:15px;color:var(--muted);font-size:14px}.aux{font-size:13px;color:var(--muted);margin:13px 0 0}.aux summary{cursor:pointer;width:max-content;color:var(--blue)}.aux p{margin-top:6px}.hide{display:none}[hidden]{display:none!important}
+.note{padding:9px 15px;border-top:1px solid var(--rule)}.message{padding:20px 15px;border-top:1px solid var(--rule);font-size:14px;color:var(--muted)}.tv{border-top:1px solid var(--rule);min-height:55px}.tv .tradingview-widget-copyright,.chart .tradingview-widget-copyright{font-size:13px;color:var(--muted);padding:5px 12px;text-align:right}.tv iframe,.chart iframe{display:block;border:0;max-width:100%;background:#131722;color-scheme:normal}.chart{height:325px}.chart .tradingview-widget-container__widget{height:calc(100% - 28px)}.chartControl{margin-top:13px}.chartControl .bar h2:focus{outline:none}.charthead{display:flex;gap:8px;align-items:baseline}.charthead h2{font-size:20px}.chartcontrol-link,.close{font-size:13px}.close{padding:4px 8px;font-size:13px}.source{margin-top:10px}.stack{display:flex;gap:8px;align-items:center}.error{padding:15px;color:var(--muted);font-size:14px}.aux{font-size:13px;color:var(--muted);margin:13px 0 0}.aux summary{cursor:pointer;width:max-content;color:var(--blue)}.aux p{margin-top:6px}.hide{display:none}[hidden]{display:none!important}
 @media(max-width:780px){.minor{display:none}}@media(max-width:580px){main{padding:18px 9px}.head{align-items:start;margin-bottom:12px;display:block}.badge{margin-top:7px}.bar{display:block;padding:9px}.filters>label{flex:1;min-width:0}.filters select,.filters input{width:100%}.tools{justify-content:space-between;margin-top:7px}.tools p{text-align:left}.optional{display:none}th,td{padding:4px 8px}td:first-child,th:first-child{padding-left:9px}td:last-child,th:last-child{padding-right:9px}.open .company{display:block}.note{padding:7px 9px}.chartControl .bar{display:flex}.charthead{display:block}.chart{height:275px}}
+
+.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}.nav button{padding:9px 13px;text-align:left}.nav button[aria-selected=true]{background:#253c60;border-color:#a9c7ff}.nav b{display:block}.nav small{color:var(--muted);font-size:13px}.panel-title{padding:12px 15px;border-bottom:1px solid var(--rule)}.radar-lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px}.lane{background:#142133;border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:7px;padding:10px;min-width:0}.lane h3{margin:0 0 5px;font-size:16px}.radar-symbols{display:flex;flex-wrap:wrap;gap:6px;padding:10px 15px;border-top:1px solid var(--rule)}.radar-symbols button{width:auto;min-width:52px;padding:4px 6px}.radar-status{padding:10px 15px;border-top:1px solid var(--rule)}.focus-layout{display:grid;grid-template-columns:minmax(176px,224px) minmax(0,1fr)}.focus-sidebar{border-right:1px solid var(--rule);max-height:450px;overflow:auto;padding:5px}.focus-rows{display:grid;gap:2px}.focus-rows button{display:grid;grid-template-columns:53px 1fr;align-items:center;gap:5px;text-align:left;width:100%;padding:7px;background:transparent;border-color:transparent}.focus-rows button[aria-pressed=true]{background:#263e62;border-color:#4e709f}.focus-rows .company{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.focus-content{min-width:0}.focus-content .bar{display:flex;align-items:start;min-height:54px}.focus-content .chart{height:370px;border-top:1px solid var(--rule)}.focus-content .note{display:flex;justify-content:space-between;gap:5px}.mobile-picker{display:none}.matrix-chart-picker{padding:8px 15px;display:flex;gap:9px;align-items:center}.matrix-chart-picker .label{margin:0}.matrix-chart-picker select{width:min(100%,285px)}.matrix-section .bar{border-bottom:1px solid var(--rule)}.focus-content h2:focus-visible{outline:2px solid var(--blue);outline-offset:2px}.section-subtitle{color:var(--muted);font-size:14px}
+@media(max-width:680px){.nav small{display:none}.nav button{text-align:center;padding:8px 5px;font-size:14px}.nav{gap:5px;margin-bottom:8px}.radar-lanes{grid-template-columns:1fr;padding:8px}.focus-layout{display:block}.focus-sidebar{display:none}.mobile-picker{display:block;padding:8px 9px;border-bottom:1px solid var(--rule)}.mobile-picker select{width:100%}.focus-content .chart{height:320px}.focus-content .note{display:block}.panel-title{padding:9px}.radar-symbols,.radar-status{padding:9px}.matrix-chart-picker{padding:5px 9px}.matrix-chart-picker select{width:auto;flex:1}}
+
+.radar-setup{padding:13px 15px}.radar-setup h3{margin:0 0 5px;font-size:17px}.radar-actions{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-top:10px;font-size:14px}.radar-actions button{padding:6px 10px}.radar-cta{background:#263e62;border-color:#597aab;color:#eff5ff;font-weight:650}.radar-import{padding:12px 15px;border-top:1px solid var(--rule)}.radar-import summary{cursor:pointer;color:var(--blue);font-weight:600}.radar-import p{margin:8px 0}.radar-import form{max-width:650px}.radar-import label{display:block;font-size:14px;margin-top:8px}.radar-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}.radar-import input,.radar-import textarea{display:block;width:100%;height:auto;min-height:35px;margin-top:4px;padding:6px 7px}.radar-import textarea{resize:vertical;border-radius:6px;font:14px var(--mono);background:var(--subpanel);color:var(--ink);border:1px solid var(--rule)}.rank-list{list-style:none;padding:0;margin:7px 0 0}.rank-list button{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:1px 7px;width:100%;text-align:left;background:transparent;border-width:1px 0 0;border-radius:0;padding:6px 1px}.rank-list button:hover{background:#1a2b44}.rank-list .company{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rank-move,.rank-price{text-align:right;font-variant-numeric:tabular-nums}.rank-move{font-weight:720;font-size:14px}.rank-empty{margin-top:9px}.radar-import code{word-break:break-word}
+@media(max-width:680px){.radar-setup,.radar-import{padding:10px 9px}.radar-meta{grid-template-columns:1fr}.radar-import textarea{max-width:100%}}
 </style></head>
 <body><main>
-<header class="head"><div><p class="eyebrow">Market desk / Matrix</p><h1>Stock Watch</h1><p class="muted">18 companies, one watchlist. Compare prices here and open a chart only when you need it.</p></div><span class="badge" id="feed-badge">USD · U.S. stocks</span></header>
-<section class="panel" aria-label="Stock matrix">
+<header class="head"><div><p class="eyebrow">Market desk / Watchlist</p><h1>Stock Watch</h1><p class="muted">18 companies, three ways to follow them.</p></div><span class="badge" id="feed-badge">USD · U.S. stocks</span></header>
+<nav id="views" class="nav" role="tablist" aria-label="Watchlist views">
+<button id="tab-matrix" type="button" role="tab" aria-controls="panel-matrix" aria-selected="true"><b>Matrix</b><small>Compare prices and daily moves</small></button>
+<button id="tab-radar" type="button" role="tab" aria-controls="panel-radar" aria-selected="false" tabindex="-1"><b>Dip Radar</b><small>Spot moves worth a closer look</small></button>
+<button id="tab-focus" type="button" role="tab" aria-controls="panel-focus" aria-selected="false" tabindex="-1"><b>Focus Desk</b><small>Go deeper on one company</small></button>
+</nav>
+<section class="panel matrix-section" id="panel-matrix" role="tabpanel" aria-labelledby="tab-matrix">
   <div class="bar"><div class="filters"><label><span class="sr">Search stock symbol or company</span><input id="search" type="search" placeholder="Symbol or company"></label><label><span class="sr">Filter by group</span><select id="group"><option value="">All companies</option><option value="tech">Tech &amp; growth</option><option value="leaders">Established leaders</option></select></label></div><div class="tools"><p class="muted" id="status" role="status">Preparing watchlist…</p></div></div>
   <div id="matrix" class="matrix-region"></div><p class="muted note">Delayed quotes from TradingView. Compare prices, daily changes, and each session’s open, high and low where available.</p>
 </section>
-<section class="panel chartControl" id="chart-panel" aria-labelledby="chart-title" hidden><div class="bar"><div class="charthead"><h2 id="chart-title" tabindex="-1"></h2><span class="company" id="chart-symbol"></span></div><div class="stack"><a class="chartcontrol-link" id="chart-link" target="_blank" rel="noopener noreferrer">TradingView chart</a><button id="close-chart" class="close" type="button">Close chart</button></div></div><div id="chart" class="chart"></div></section>
+<section class="panel" id="panel-radar" role="tabpanel" aria-labelledby="tab-radar" hidden>
+  <header class="panel-title"><h2>Dip Radar</h2><p class="section-subtitle">Look for notable moves on this watchlist. A price drop is a reason to investigate, not a buy signal.</p></header>
+  <div id="radar-content"></div>
+</section>
+<section class="panel" id="panel-focus" role="tabpanel" aria-labelledby="tab-focus" hidden>
+  <header class="panel-title"><h2>Focus Desk</h2><p class="section-subtitle">Choose a company to see its price, change and chart from TradingView.</p></header>
+  <div class="mobile-picker"><label class="sr" for="focus-select">Choose a company for the chart</label><select id="focus-select"></select></div>
+  <div class="focus-layout">
+    <aside class="focus-sidebar" aria-label="Choose a company"><div class="focus-rows" id="focus-rows"></div></aside>
+    <div class="focus-content"><div class="bar"><div class="charthead"><h2 id="chart-title" tabindex="-1"></h2><span class="company" id="chart-symbol"></span></div><a class="chartcontrol-link" id="chart-link" target="_blank" rel="noopener noreferrer">Open in TradingView</a></div><div id="chart" class="chart"></div><p class="muted note">Quotes and chart data may be delayed. History shown depends on the symbol.</p></div>
+  </div>
+</section>
 <details class="aux"><summary>About the data</summary><p>Quote fields and refresh timing depend on TradingView and the exchange.</p><p>Prices are in USD, may be delayed, and are not trade execution prices.</p></details>
 <noscript><p class="message">JavaScript is needed to display the watchlist. <a href="https://www.tradingview.com/markets/stocks-usa/">Browse U.S. stocks on TradingView</a>.</p></noscript>
 </main><script>
@@ -37,7 +59,8 @@ const STOCKS=[
   ['NYSE','XOM','Exxon Mobil','leaders'],['NYSE','CAT','Caterpillar','leaders'],['NYSE','UNP','Union Pacific','leaders'],
 ].map(([exchange,symbol,company,group])=>({exchange,symbol,company,group,key:exchange+':'+symbol}));
 const $=id=>document.getElementById(id);
-let lastChartPicker = null;
+const MODES=['matrix','radar','focus'];
+const state={mode:'matrix',selected:'NASDAQ:NVDA',matrixKey:null,radarLoaded:false,renderedChart:null};
 const href=s=>'https://www.tradingview.com/symbols/'+s.exchange+'-'+s.symbol+'/';
 function result(){
   const q=$('search').value.trim().toLowerCase(), g=$('group').value;
@@ -58,11 +81,11 @@ function appendWidget(mount,type,settings,caption,fail,heading){
   root.append(script);return root;
 }
 function chartPicker(list){
-  const shell=document.createElement('div');shell.className='note filters';
-  const l=document.createElement('label');l.htmlFor='chart-picker';l.textContent='Chart'; l.className='label';
+  const shell=document.createElement('div');shell.className='matrix-chart-picker';
+  const l=document.createElement('label');l.htmlFor='chart-picker';l.textContent='Focus chart'; l.className='label';
   const select=document.createElement('select');select.id='chart-picker';
   select.innerHTML='<option value="">Choose a company</option>'+list.map(s=>'<option value="'+s.key+'">'+s.symbol+' · '+s.company+'</option>').join('');
-  select.addEventListener('change',()=>{const s=list.find(x=>x.key===select.value);if(s){lastChartPicker=select;openChart(s);}});
+  select.addEventListener('change',()=>{const s=list.find(x=>x.key===select.value);if(s)selectMode('focus',{symbol:s.key,focusChart:true});});
   shell.append(l,select);return shell;
 }
 function drawEmbed(list){
@@ -71,7 +94,7 @@ function drawEmbed(list){
   matrix.append(chartPicker(list));
   const host=document.createElement('div');host.className='tv';matrix.append(host);
   const groups=[['tech','Tech & growth'],['leaders','Established leaders']].map(([group,name])=>({name,symbols:list.filter(s=>s.group===group).map(s=>({name:s.key,displayName:s.company}))})).filter(group=>group.symbols.length);
-  const config={title:'Stock Watch',width:'100%',height:Math.max(138,60+groups.length*30+list.length*37),showSymbolLogo:true,locale:'en',colorTheme:'dark',isTransparent:true,backgroundColor:'#111b2a',symbolsGroups:groups};
+  const config={title:'Stock Watch',width:'100%',height:Math.max(138,76+groups.length*35+list.length*37),showSymbolLogo:true,locale:'en',colorTheme:'dark',isTransparent:false,symbolsGroups:groups};
   const fallback=()=>{
     host.innerHTML='<p class="error">TradingView quotes could not be loaded. You can still open a chart or use a direct symbol link.</p><div class="note">'+list.map(s=>'<a href="'+href(s)+'" target="_blank" rel="noopener noreferrer" class="sym">'+s.symbol+'</a> ').join('')+'</div>';
   };
@@ -80,19 +103,158 @@ function drawEmbed(list){
 function render(){
   const list=result(), matrix=$('matrix');
   $('status').textContent=list.length+' of '+STOCKS.length+' companies';
+  const key=list.map(s=>s.key).join(',');
+  if(key===state.matrixKey)return;
+  state.matrixKey=key;
   if(!list.length){matrix.innerHTML='<p class="message">No matching stocks. Try a different symbol or group.</p>';return;}
   drawEmbed(list);
 }
 function openChart(s){
-  $('chart-panel').hidden=false;$('chart-title').textContent=s.company;$('chart-symbol').textContent=s.key;$('chart-link').href=href(s);
+  $('chart-title').textContent=s.company;$('chart-symbol').textContent=s.key;$('chart-link').href=href(s);
   const chart=$('chart');chart.replaceChildren();
+  state.renderedChart=s.key;
   const ranges=s.symbol==='ANT'?['1d|1','1m|60']:['1d|1','1m|60','1y|1D'];
-  appendWidget(chart,'symbol-overview',{symbols:[[s.company,s.key+'|1D']],chartOnly:false,width:'100%',height:'100%',locale:'en',colorTheme:'dark',isTransparent:true,autosize:true,showVolume:false,showMA:false,showDateRanges:true,showOHLC:true,chartType:'area',dateRanges:ranges},'Symbol chart',()=>{chart.innerHTML='<p class="error">The chart could not be loaded. Use the TradingView chart link above.</p>';},s.company+' TradingView chart');
-  $('chart-title').focus();
+  appendWidget(chart,'symbol-overview',{symbols:[[s.company,s.key+'|1D']],chartOnly:false,width:'100%',height:'100%',locale:'en',colorTheme:'dark',isTransparent:false,autosize:true,showVolume:false,showMA:false,showDateRanges:true,showOHLC:true,chartType:'area',dateRanges:ranges},'Symbol chart',()=>{chart.innerHTML='<p class="error">The chart could not be loaded. Use the TradingView chart link above.</p>';},s.company+' TradingView chart');
+}
+function renderFocus(){
+  const s=STOCKS.find(x=>x.key===state.selected)||STOCKS[0];
+  $('focus-select').value=s.key;
+  $('focus-rows').querySelectorAll('button[data-stock]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.stock===s.key)));
+  if(s.key!==state.renderedChart)openChart(s);
+}
+const RADAR_COLS={
+  symbol:['symbol','ticker'], close:['close','price','last','last price'],
+  day:['change 1d %','1d %','change %','change percent','daily change %'],
+  week:['change 5d %','5d %','5-day %','change 1w %','1w %','weekly change %'],
+  low:['52 week low','52-week low','52w low'],
+};
+function parseCsv(text){
+  const clean=text.replace(/^\uFEFF/,'').trim();
+  if(!clean)throw Error('Paste or choose a CSV with a header and stock rows.');
+  const start=clean.split(/\r?\n/,1)[0];const delimiter=start.includes('\t')?'\t':start.includes(';')?';':',';
+  const out=[];let row=[],value='',quoted=false;
+  const push=()=>{row.push(value.trim());value='';};
+  for(let i=0;i<clean.length;i++){
+    const c=clean[i];
+    if(c==='"'){
+      if(quoted&&clean[i+1]==='"'){value+='"';i++;}
+      else if(quoted||!value.trim())quoted=!quoted;
+      else value+=c;
+    }else if(!quoted&&(c===delimiter||c==='\r'||c==='\n')){
+      push();if(c===delimiter)continue;
+      if(c==='\r'&&clean[i+1]==='\n')i++;
+      if(row.some(Boolean))out.push(row);row=[];
+    }else value+=c;
+  }
+  if(quoted)throw Error('The file contains an unclosed quoted field.');
+  push();if(row.some(Boolean))out.push(row);return out;
+}
+function parseQuotes(text){
+  const [heads,...rows]=parseCsv(text);
+  const normalize=h=>h.toLowerCase().trim().replace(/_/g,' ').replace(/\s+/g,' ');
+  const fields=Object.fromEntries(Object.entries(RADAR_COLS).map(([k,v])=>[k,heads.findIndex(h=>v.includes(normalize(h)))]));
+  if(fields.symbol===-1||[fields.day,fields.week].every(i=>i===-1)&&(fields.low===-1||fields.close===-1))throw Error('Use a Symbol column plus 1D %, 5D %, or both Close and 52w low.');
+  const getNum=x=>{
+    const value=(x||'').replace(/^\$/,'').replace(/%$/,'').replace(/\u2212/g,'-').trim();
+    if(!/^[+-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?$/.test(value)&&!/^[+-]?\.\d+$/.test(value))return null;
+    const n=Number(value.replace(/,/g,''));return Number.isFinite(n)?n:null;
+  };
+  const bySymbol=new Map(),dupes=new Set();
+  for(const row of rows){
+    const symbol=(row[fields.symbol]||'').toUpperCase();
+    const stock=STOCKS.find(x=>x.symbol===symbol||x.key===symbol);
+    if(!stock)continue;
+    if(bySymbol.has(stock.key)){dupes.add(stock.key);continue;}
+    const price=getNum(row[fields.close]),day=getNum(row[fields.day]),week=getNum(row[fields.week]),low=getNum(row[fields.low]);
+    const usableDay=day!==null&&day>=-100?day:null,usableWeek=week!==null&&week>=-100?week:null;
+    const sinceLow=price>0&&low>0&&price>=low?(price/low-1)*100:null;
+    bySymbol.set(stock.key,{stock,price:price>0?price:null,day:usableDay,week:usableWeek,near:Number.isFinite(sinceLow)?sinceLow:null});
+  }
+  for(const key of dupes)bySymbol.delete(key);
+  const quotes=[...bySymbol.values()].filter(row=>[row.day,row.week,row.near].some(Number.isFinite));
+  if(!quotes.length)throw Error('No usable watchlist rows. Check ticker symbols, columns, and values. Duplicate symbols are excluded.');
+  return {quotes,duplicates:dupes.size};
+}
+const rankPct=n=>(n>0?'+':n<0?'−':'')+Math.abs(n).toFixed(2)+'%';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function drawRadarRank(snapshot){
+  const host=$('radar-result'), {quotes,duplicates}=snapshot;
+  const price=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
+  const d=quotes.filter(r=>Number.isFinite(r.day)).length,w=quotes.filter(r=>Number.isFinite(r.week)).length,l=quotes.filter(r=>Number.isFinite(r.near)).length;
+  const lane=(name,note,accent,candidates,key,descending,covered)=>{
+    const sign=descending?-1:1;
+    const ordered=[...candidates].sort((a,b)=>sign*(a[key]-b[key])||a.stock.symbol.localeCompare(b.stock.symbol)).slice(0,5);
+    return '<section class="lane" style="--accent:'+accent+'"><h3>'+name+'</h3><p class="muted">'+note+'</p>'+(ordered.length?'<ol class="rank-list">'+ordered.map(({stock,price:p,[key]:n})=>'<li><button type="button" data-stock="'+stock.key+'" aria-label="Open '+stock.company+' in Focus Desk"><span class="sym">'+stock.symbol+'</span><span class="rank-move '+(key==='near'?'flat':n>0?'gain':'loss')+'">'+(key==='near'?n.toFixed(1)+'% above':rankPct(n))+'</span><span class="company">'+stock.company+'</span><span class="muted rank-price">'+(p?price.format(p):'')+'</span></button></li>').join('')+'</ol>':'<p class="muted rank-empty">'+(covered?'No matches in the rows supplied.':'No data supplied for this metric.')+'</p>')+'</section>';
+  };
+  host.innerHTML='<p class="muted radar-status">As of '+esc(snapshot.date)+' · Source: '+esc(snapshot.source)+' (user supplied)<br>Coverage: '+quotes.length+'/18 companies · 1D '+d+'/18 · 5D '+w+'/18 · 52-week low '+l+'/18'+(duplicates?' · '+duplicates+' duplicate '+(duplicates===1?'symbol excluded':'symbols excluded'):'')+'. Missing values are not ranked.</p><div class="radar-lanes">'+
+    lane('Biggest 1D declines','Down on the supplied session','var(--loss)',quotes.filter(r=>r.day<0),'day',false,d)+
+    lane('Biggest 5D declines','Down across the supplied five days','var(--loss)',quotes.filter(r=>r.week<0),'week',false,w)+
+    lane('Leading today','Up on the supplied session','var(--gain)',quotes.filter(r=>r.day>0),'day',true,d)+
+    lane('Rebounding','Up today, still down over five days','var(--gain)',quotes.filter(r=>r.day>0&&r.week<0),'day',true,quotes.some(r=>Number.isFinite(r.day)&&Number.isFinite(r.week)))+
+    lane('Near the 52-week low','Within 8% of the supplied low','#ffd08d',quotes.filter(r=>r.near!==null&&r.near<=8),'near',false,l)+
+    '</div><p class="muted radar-status">Top five per group. A company can appear in more than one group. These are research lists, not buy or sell signals.</p>';
+}
+function downloadWatchlist(){
+  const file=new Blob([STOCKS.map(s=>s.key).join(',')+'\n'],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(file),a=document.createElement('a');
+  a.href=url;a.download='stock-watch-18-tradingview.txt';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+function renderRadar(){
+  const target=$('radar-content');
+  target.innerHTML='<div class="radar-setup"><h3>Sort your 18 stocks in TradingView</h3><p class="muted">Download the symbol list, open your TradingView watchlist, import the .txt file, then sort the Change % column. This uses TradingView’s watchlist, not the quote embed in Matrix.</p><div class="radar-actions"><button id="radar-download" type="button" class="radar-cta">Download watchlist for TradingView</button><a href="https://www.tradingview.com/watchlists/" target="_blank" rel="noopener noreferrer">Open TradingView watchlist</a><a href="https://www.tradingview.com/support/solutions/43000487233-how-to-import-or-export-a-watchlist/" target="_blank" rel="noopener noreferrer">Import instructions</a></div></div>'+
+  '<div class="radar-start" id="radar-result"><p class="muted radar-status">No quote snapshot loaded. The Matrix and charts show delayed quotes, but the embed does not provide data for custom rankings here.</p></div>'+
+  '<details class="radar-import"><summary>Rank a CSV on this device</summary><p class="muted">Use quote data you’re allowed to use. This file is read in your browser only, never uploaded or saved. TradingView’s watchlist text file contains symbols only, not quotes.</p><p class="muted">Header example: <code>Symbol,Close,1D %,5D %,52w low</code>. Put percentages in percentage points, e.g. enter 2 for 2%. Close and 52w low should be in USD. You can omit metrics you do not have.</p><form id="radar-form"><div class="radar-meta"><label>Session date<input id="radar-date" type="date" required></label><label>Quote source<input id="radar-source" type="text" placeholder="Source name" maxlength="80" required></label></div><label>Choose CSV or TSV<input id="radar-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain"></label><label>Or paste data<textarea id="radar-text" rows="4" placeholder="Symbol,Close,1D %,5D %,52w low" maxlength="262144"></textarea></label><div class="radar-actions"><button type="submit">Rank watchlist</button><button id="radar-clear" type="button">Clear local data</button><span role="status" id="radar-error" class="muted"></span></div></form></details>';
+  $('radar-download').addEventListener('click',downloadWatchlist);
+  const original=$('radar-result').innerHTML;
+  let submission=0;
+  $('radar-form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    const token=++submission,error=$('radar-error');
+    error.textContent='';$('radar-result').innerHTML=original;
+    const file=$('radar-file').files[0];
+    const source=$('radar-source').value.trim(),date=$('radar-date').value;
+    try{
+      if(!source||!date)throw Error('Enter the quote source and session date.');
+      const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+      const today=parts.year+'-'+parts.month+'-'+parts.day;
+      if(date>today)throw Error('Session date cannot be in the future.');
+      if(file&&file.size>262144)throw Error('Choose a file smaller than 256 KB.');
+      const input=file?await file.text():$('radar-text').value;
+      if(token!==submission)return;
+      drawRadarRank({...parseQuotes(input),source,date});
+      $('radar-result').scrollIntoView({block:'nearest'});
+    }catch(e){if(token===submission)error.textContent=e.message||'Could not read that file.';}
+  });
+  $('radar-clear').addEventListener('click',()=>{submission++;$('radar-form').reset();$('radar-error').textContent='';$('radar-result').innerHTML=original;});
+  state.radarLoaded=true;
+}
+function selectMode(mode,{symbol,focusChart=false,focusTab=false}={}){
+  if(!MODES.includes(mode))return;
+  if(symbol&&STOCKS.some(s=>s.key===symbol))state.selected=symbol;
+  if(mode!=='focus'&&state.renderedChart){$('chart').replaceChildren();state.renderedChart=null;}
+  state.mode=mode;
+  for(const name of MODES){const active=name===mode, tab=$('tab-'+name);tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;$('panel-'+name).hidden=!active;}
+  if(mode==='matrix'){render();const picker=$('chart-picker');if(picker)picker.value='';}
+  if(mode==='radar'&&!state.radarLoaded)renderRadar();
+  if(mode==='focus')renderFocus();
+  if(focusChart)$('chart-title').focus(); else if(focusTab)$('tab-'+mode).focus();
+}
+$('focus-select').innerHTML=STOCKS.map(s=>'<option value="'+s.key+'">'+s.symbol+' · '+s.company+'</option>').join('');
+$('focus-rows').innerHTML=STOCKS.map(s=>'<button type="button" data-stock="'+s.key+'" aria-pressed="false"><span class="sym">'+s.symbol+'</span><span class="company">'+s.company+'</span></button>').join('');
+$('focus-select').addEventListener('change',event=>selectMode('focus',{symbol:event.target.value}));
+$('focus-rows').addEventListener('click',event=>{const button=event.target.closest('button[data-stock]'); if(button)selectMode('focus',{symbol:button.dataset.stock});});
+$('radar-content').addEventListener('click',event=>{const button=event.target.closest('button[data-stock]'); if(button)selectMode('focus',{symbol:button.dataset.stock,focusChart:true});});
+for(const mode of MODES){
+  const tab=$('tab-'+mode);
+  tab.addEventListener('click',()=>selectMode(mode));
+  tab.addEventListener('keydown',event=>{
+    const index=MODES.indexOf(mode);
+    const next={ArrowLeft:MODES[(index+2)%3],ArrowRight:MODES[(index+1)%3],Home:MODES[0],End:MODES[2]}[event.key];
+    if(next){event.preventDefault();selectMode(next,{focusTab:true});}
+  });
 }
 let searchTimer;
 $('search').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(render,180);});
 $('group').addEventListener('change',()=>{clearTimeout(searchTimer);render();});
-$('close-chart').addEventListener('click',()=>{$('chart-panel').hidden=true;$('chart').replaceChildren();if(lastChartPicker?.isConnected)lastChartPicker.focus();else $('search').focus();});
-render();
+selectMode('matrix');
 </script></body></html>
