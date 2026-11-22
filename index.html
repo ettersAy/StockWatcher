@@ -1,111 +1,98 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark">
-  <title>Stock Watchlist</title>
-  <style>
-    *{box-sizing:border-box} body{margin:0;background:#101113;color:#f6f7f9;font:16px/1.5 system-ui,sans-serif}
-    main{max-width:1060px;margin:auto;padding:clamp(20px,5vw,54px) 16px 40px}
-    .top{margin:0 0 20px}.eyebrow{color:#bbc4ff;font-size:.75rem;letter-spacing:.16em;font-weight:700;text-transform:uppercase;margin:0}
-    h1{margin:3px 0 4px;font-size:clamp(2rem,5vw,3.35rem);line-height:1.1;letter-spacing:-.045em}
-    .note{color:#b9bdc7;margin:8px 0 0;font-size:.91rem} .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:15px}
-    .group{margin:25px 0 32px}.group-title{font-size:1.25rem;margin:0 0 10px;letter-spacing:-.02em}
-    article{min-width:0;background:#16181c;border:1px solid #30333b;border-radius:18px;padding:15px;overflow:hidden}
-    .card-head{display:flex;align-items:center;gap:12px;margin-bottom:10px} .badge{padding:6px 8px;border-radius:8px;background:#25293a;color:#d7ddff;font:700 .74rem/1.2 ui-monospace,monospace}
-    h2{font-size:1.04rem;margin:0} .exchange{color:#aeb4c2;font-size:.75rem;margin-left:auto;white-space:nowrap}
-    .tradingview-widget-container{height:335px;position:relative}.tradingview-widget-container__widget{height:calc(100% - 24px)}
-    .tradingview-widget-copyright{font-size:12px;line-height:24px;color:#b9bdc7}
-    a{color:#bbc4ff} a:focus-visible{outline:2px solid #bbc4ff;outline-offset:3px} footer{margin-top:16px}
-    @media(max-width:420px){article{padding:11px}.tradingview-widget-container{height:306px}}
-  </style>
-</head>
-<body>
-  <main>
-    <header class="top">
-      <p class="eyebrow">Market watch</p>
-      <h1>Stock Watchlist</h1>
-      <p class="note">U.S. stocks · USD · Quotes may be delayed</p>
-    </header>
-    <section class="group" aria-labelledby="tech-title">
-      <h2 class="group-title" id="tech-title">Technology &amp; growth</h2>
-      <div id="watchlist" class="grid"></div>
-    </section>
-    <section class="group" aria-labelledby="leaders-title">
-      <h2 class="group-title" id="leaders-title">Established companies beyond tech</h2>
-      <div id="leaders" class="grid"></div>
-      <p class="note">A price drop is a reason to research, not a buy signal. Even large companies may not recover.</p>
-    </section>
-    <noscript><p>Enable JavaScript to see the stock cards.</p></noscript>
-    <footer class="note">Prices and charts are displayed by TradingView. If a chart doesn’t load, open its symbol link.</footer>
-  </main>
-  <template id="card">
-    <article>
-      <header class="card-head"><span class="badge"></span><h2></h2><span class="exchange"></span></header>
-      <div class="tradingview-widget-container">
-        <div class="tradingview-widget-container__widget"></div>
-        <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener noreferrer" target="_blank"></a> by TradingView</div>
-      </div>
-    </article>
-  </template>
-  <script>
-    const stocks = [
-      ['ANT', 'Anthropic'], ['MSFT', 'Microsoft'], ['GOOGL', 'Alphabet (Google)'],
-      ['AAPL', 'Apple'], ['NVDA', 'NVIDIA'], ['AMZN', 'Amazon'], ['META', 'Meta'], ['TSLA', 'Tesla']
-    ];
-    const leaders = [
-      ["NYSE","BRK.B","Berkshire Hathaway"],
-      ["NYSE","JPM","JPMorgan Chase"],
-      ["NYSE","V","Visa"],
-      ["NASDAQ","COST","Costco"],
-      ["NYSE","PG","Procter & Gamble"],
-      ["NYSE","KO","Coca-Cola"],
-      ["NYSE","JNJ","Johnson & Johnson"],
-      ["NYSE","XOM","Exxon Mobil"],
-      ["NYSE","CAT","Caterpillar"],
-      ["NYSE","UNP","Union Pacific"]
-    ];
-    const template = document.querySelector('#card');
-    function mount(container) {
-      const embed = document.createElement('script');
-      embed.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
-      embed.async = true;
-      embed.textContent = JSON.stringify({
-        symbols: [[container.dataset.company, container.dataset.exchange + ':' + container.dataset.symbol + '|1D']],
-        chartOnly: false, width: '100%', height: '100%', locale: 'en',
-        colorTheme: 'dark', isTransparent: true, autosize: true,
-        showVolume: false, showMA: false, showLabels: false, showDateRanges: true,
-        hideDateRanges: false, hideMarketStatus: false, hideSymbolLogo: false,
-        showOHLC: true, chartType: 'area', dateRanges: ['1d|1', '1m|60', '1y|1D']
-      });
-      container.append(embed);
-    }
-    const lazy = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
-      for (const entry of entries) if (entry.isIntersecting) {
-        lazy.unobserve(entry.target);
-        mount(entry.target);
-      }
-    }, {rootMargin:'240px'}) : null;
-    function addCard(list, exchange, symbol, company) {
-      const card = template.content.firstElementChild.cloneNode(true);
-      card.querySelector('.badge').textContent = symbol;
-      card.querySelector('h2').textContent = company;
-      card.querySelector('.exchange').textContent = exchange;
-      const link = card.querySelector('a');
-      link.href = 'https://www.tradingview.com/symbols/' + exchange + '-' + symbol + '/';
-      link.textContent = symbol + ' chart';
-      const container = card.querySelector('.tradingview-widget-container');
-      container.dataset.company = company;
-      container.dataset.symbol = symbol;
-      container.dataset.exchange = exchange;
-      list.append(card);
-      if (lazy) lazy.observe(container); else mount(container);
-    }
-    const techList = document.querySelector('#watchlist');
-    const leaderList = document.querySelector('#leaders');
-    for (const [symbol, company] of stocks) addCard(techList, 'NASDAQ', symbol, company);
-    for (const stock of leaders) addCard(leaderList, ...stock);
-  </script>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stock Watch · Market Matrix</title><meta name="description" content="Compare 18 stocks together in one compact market matrix.">
+<style>
+:root{color-scheme:dark;--bg:#0a101b;--panel:#111b2a;--subpanel:#152237;--rule:#29394f;--ink:#f0f6ff;--muted:#a6b7cf;--blue:#a9c7ff;--gain:#6ee7bc;--loss:#ff9ca9;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 72% 0%,#1b3050 0,transparent 42%) var(--bg);color:var(--ink);font:16px/1.4 system-ui,sans-serif}
+main{max-width:1150px;margin:auto;padding:32px 26px 24px}.head{margin-bottom:18px;display:flex;justify-content:space-between;align-items:end;gap:10px}
+h1,h2,p{margin:0}h1{font-size:clamp(37px,6vw,61px);letter-spacing:-.062em;line-height:1;margin:4px 0 8px}h2{font-size:21px;letter-spacing:-.03em}.eyebrow,.badge{font:700 12px/1.45 var(--mono);letter-spacing:.11em;text-transform:uppercase}.eyebrow{color:var(--blue)}
+.badge{padding:6px 9px;border:1px solid #3a5072;border-radius:5px;color:#d1e1ff;background:#172844;display:inline-block;white-space:nowrap}.muted{color:var(--muted);font-size:14px}a{color:var(--blue);text-underline-offset:3px}
+.panel{border:1px solid var(--rule);border-radius:11px;background:var(--panel);overflow:hidden}.bar{display:flex;gap:8px;padding:12px 15px;align-items:center;justify-content:space-between}
+.filters{display:flex;align-items:center;gap:6px}.tools{display:flex;align-items:center;gap:8px}.tools p{text-align:right}
+button,input,select{font:inherit;color:inherit;background:var(--subpanel);border:1px solid var(--rule);border-radius:6px;}button{cursor:pointer}button:hover{border-color:var(--blue)}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+input,select{height:36px;padding:0 9px;font-size:14px}input{width:184px;max-width:100%}.label{font-size:13px;color:var(--muted);display:block;margin-bottom:3px}.sr{width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;position:absolute}
+table{border-collapse:collapse;width:100%;white-space:nowrap}th,td{text-align:right;padding:5px 12px;border-top:1px solid #243349}th{background:var(--subpanel);color:var(--muted);font-size:13px}th button{border:0;background:transparent;color:inherit;padding:3px 0}th[aria-sort] button{color:#d8e7ff}td{height:35px;font-size:14px}tbody tr:hover{background:#17253a}th:first-child,td:first-child{text-align:left;padding-left:15px}th:last-child,td:last-child{padding-right:15px}
+.sym{font:750 14px var(--mono);color:var(--ink);display:inline-block;min-width:53px;letter-spacing:-.045em}.company{color:var(--muted);font-size:13px}.open{border:0;background:none;padding:3px 0;text-align:left;border-radius:2px}.open:hover .sym{color:var(--blue);text-decoration:underline}.num{font-variant-numeric:tabular-nums}.gain{color:var(--gain)}.loss{color:var(--loss)}.flat,.na{color:var(--muted)}.change{font-weight:700}.trend{display:inline-block;width:62px;height:23px;vertical-align:middle}.matrix-region{overflow:auto}
+.note{padding:9px 15px;border-top:1px solid var(--rule)}.message{padding:20px 15px;border-top:1px solid var(--rule);font-size:14px;color:var(--muted)}.tv{border-top:1px solid var(--rule);min-height:55px}.tv .tradingview-widget-copyright,.chart .tradingview-widget-copyright{font-size:13px;color:var(--muted);padding:5px 12px;text-align:right}.tv iframe,.chart iframe{display:block;border:0;max-width:100%}.chart{height:325px}.chart .tradingview-widget-container__widget{height:calc(100% - 28px)}.chartControl{margin-top:13px}.chartControl .bar h2:focus{outline:none}.charthead{display:flex;gap:8px;align-items:baseline}.charthead h2{font-size:20px}.chartcontrol-link,.close{font-size:13px}.close{padding:4px 8px;font-size:13px}.source{margin-top:10px}.stack{display:flex;gap:8px;align-items:center}.error{padding:15px;color:var(--muted);font-size:14px}.aux{font-size:13px;color:var(--muted);margin:13px 0 0}.aux summary{cursor:pointer;width:max-content;color:var(--blue)}.aux p{margin-top:6px}.hide{display:none}[hidden]{display:none!important}
+@media(max-width:780px){.minor{display:none}}@media(max-width:580px){main{padding:18px 9px}.head{align-items:start;margin-bottom:12px;display:block}.badge{margin-top:7px}.bar{display:block;padding:9px}.filters>label{flex:1;min-width:0}.filters select,.filters input{width:100%}.tools{justify-content:space-between;margin-top:7px}.tools p{text-align:left}.optional{display:none}th,td{padding:4px 8px}td:first-child,th:first-child{padding-left:9px}td:last-child,th:last-child{padding-right:9px}.open .company{display:block}.note{padding:7px 9px}.chartControl .bar{display:flex}.charthead{display:block}.chart{height:275px}}
+</style></head>
+<body><main>
+<header class="head"><div><p class="eyebrow">Market desk / Matrix</p><h1>Stock Watch</h1><p class="muted">18 companies, one watchlist. Compare prices here and open a chart only when you need it.</p></div><span class="badge" id="feed-badge">USD · U.S. stocks</span></header>
+<section class="panel" aria-label="Stock matrix">
+  <div class="bar"><div class="filters"><label><span class="sr">Search stock symbol or company</span><input id="search" type="search" placeholder="Symbol or company"></label><label><span class="sr">Filter by group</span><select id="group"><option value="">All companies</option><option value="tech">Tech &amp; growth</option><option value="leaders">Established leaders</option></select></label></div><div class="tools"><p class="muted" id="status" role="status">Preparing watchlist…</p></div></div>
+  <div id="matrix" class="matrix-region"></div><p class="muted note">Delayed quotes from TradingView. Compare prices, daily changes, and each session’s open, high and low where available.</p>
+</section>
+<section class="panel chartControl" id="chart-panel" aria-labelledby="chart-title" hidden><div class="bar"><div class="charthead"><h2 id="chart-title" tabindex="-1"></h2><span class="company" id="chart-symbol"></span></div><div class="stack"><a class="chartcontrol-link" id="chart-link" target="_blank" rel="noopener noreferrer">TradingView chart</a><button id="close-chart" class="close" type="button">Close chart</button></div></div><div id="chart" class="chart"></div></section>
+<details class="aux"><summary>About the data</summary><p>Quote fields and refresh timing depend on TradingView and the exchange.</p><p>Prices are in USD, may be delayed, and are not trade execution prices.</p></details>
+<noscript><p class="message">JavaScript is needed to display the watchlist. <a href="https://www.tradingview.com/markets/stocks-usa/">Browse U.S. stocks on TradingView</a>.</p></noscript>
+</main><script>
+'use strict';
+const STOCKS=[
+  ['NASDAQ','ANT','Anthropic','tech'],['NASDAQ','MSFT','Microsoft','tech'],['NASDAQ','GOOGL','Alphabet (Google)','tech'],
+  ['NASDAQ','AAPL','Apple','tech'],['NASDAQ','NVDA','NVIDIA','tech'],['NASDAQ','AMZN','Amazon','tech'],
+  ['NASDAQ','META','Meta','tech'],['NASDAQ','TSLA','Tesla','tech'],['NYSE','BRK.B','Berkshire Hathaway','leaders'],
+  ['NYSE','JPM','JPMorgan Chase','leaders'],['NYSE','V','Visa','leaders'],['NASDAQ','COST','Costco','leaders'],
+  ['NYSE','PG','Procter & Gamble','leaders'],['NYSE','KO','Coca-Cola','leaders'],['NYSE','JNJ','Johnson & Johnson','leaders'],
+  ['NYSE','XOM','Exxon Mobil','leaders'],['NYSE','CAT','Caterpillar','leaders'],['NYSE','UNP','Union Pacific','leaders'],
+].map(([exchange,symbol,company,group])=>({exchange,symbol,company,group,key:exchange+':'+symbol}));
+const $=id=>document.getElementById(id);
+let lastChartPicker = null;
+const href=s=>'https://www.tradingview.com/symbols/'+s.exchange+'-'+s.symbol+'/';
+function result(){
+  const q=$('search').value.trim().toLowerCase(), g=$('group').value;
+  return STOCKS.filter(s=>(!g||s.group===g)&&(!q||(s.key+' '+s.company).toLowerCase().includes(q)));
+}
+function appendWidget(mount,type,settings,caption,fail,heading){
+  const root=document.createElement('div');root.className='tradingview-widget-container';
+  root.style.height='100%';
+  const frame=document.createElement('div');frame.className='tradingview-widget-container__widget';
+  const credits=document.createElement('div');credits.className='tradingview-widget-copyright';
+  const link=document.createElement('a');link.href=type==='market-quotes'?'https://www.tradingview.com/markets/':'https://www.tradingview.com/';link.rel='noopener noreferrer';link.target='_blank';link.textContent=caption;
+  credits.append(link,document.createTextNode(' by TradingView'));root.append(frame,credits);mount.append(root);
+  const script=document.createElement('script');script.src='https://s3.tradingview.com/external-embedding/embed-widget-'+type+'.js';
+  script.async=true;script.textContent=JSON.stringify(settings);
+  const observer=new MutationObserver(()=>{const f=root.querySelector('iframe');if(f){f.setAttribute('title',heading);observer.disconnect();}});
+  observer.observe(root,{childList:true,subtree:true});
+  script.addEventListener('error',()=>{observer.disconnect();if(mount.contains(root))fail();},{once:true});
+  root.append(script);return root;
+}
+function chartPicker(list){
+  const shell=document.createElement('div');shell.className='note filters';
+  const l=document.createElement('label');l.htmlFor='chart-picker';l.textContent='Chart'; l.className='label';
+  const select=document.createElement('select');select.id='chart-picker';
+  select.innerHTML='<option value="">Choose a company</option>'+list.map(s=>'<option value="'+s.key+'">'+s.symbol+' · '+s.company+'</option>').join('');
+  select.addEventListener('change',()=>{const s=list.find(x=>x.key===select.value);if(s){lastChartPicker=select;openChart(s);}});
+  shell.append(l,select);return shell;
+}
+function drawEmbed(list){
+  const matrix=$('matrix');matrix.replaceChildren();
+  // Keep this separate from the provider's table. It does not read or scrape cross-origin content.
+  matrix.append(chartPicker(list));
+  const host=document.createElement('div');host.className='tv';matrix.append(host);
+  const groups=[['tech','Tech & growth'],['leaders','Established leaders']].map(([group,name])=>({name,symbols:list.filter(s=>s.group===group).map(s=>({name:s.key,displayName:s.company}))})).filter(group=>group.symbols.length);
+  const config={title:'Stock Watch',width:'100%',height:Math.max(138,60+groups.length*30+list.length*37),showSymbolLogo:true,locale:'en',colorTheme:'dark',isTransparent:true,backgroundColor:'#111b2a',symbolsGroups:groups};
+  const fallback=()=>{
+    host.innerHTML='<p class="error">TradingView quotes could not be loaded. You can still open a chart or use a direct symbol link.</p><div class="note">'+list.map(s=>'<a href="'+href(s)+'" target="_blank" rel="noopener noreferrer" class="sym">'+s.symbol+'</a> ').join('')+'</div>';
+  };
+  appendWidget(host,'market-quotes',config,'Market data',fallback,'TradingView stock quote matrix');
+}
+function render(){
+  const list=result(), matrix=$('matrix');
+  $('status').textContent=list.length+' of '+STOCKS.length+' companies';
+  if(!list.length){matrix.innerHTML='<p class="message">No matching stocks. Try a different symbol or group.</p>';return;}
+  drawEmbed(list);
+}
+function openChart(s){
+  $('chart-panel').hidden=false;$('chart-title').textContent=s.company;$('chart-symbol').textContent=s.key;$('chart-link').href=href(s);
+  const chart=$('chart');chart.replaceChildren();
+  const ranges=s.symbol==='ANT'?['1d|1','1m|60']:['1d|1','1m|60','1y|1D'];
+  appendWidget(chart,'symbol-overview',{symbols:[[s.company,s.key+'|1D']],chartOnly:false,width:'100%',height:'100%',locale:'en',colorTheme:'dark',isTransparent:true,autosize:true,showVolume:false,showMA:false,showDateRanges:true,showOHLC:true,chartType:'area',dateRanges:ranges},'Symbol chart',()=>{chart.innerHTML='<p class="error">The chart could not be loaded. Use the TradingView chart link above.</p>';},s.company+' TradingView chart');
+  $('chart-title').focus();
+}
+let searchTimer;
+$('search').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(render,180);});
+$('group').addEventListener('change',()=>{clearTimeout(searchTimer);render();});
+$('close-chart').addEventListener('click',()=>{$('chart-panel').hidden=true;$('chart').replaceChildren();if(lastChartPicker?.isConnected)lastChartPicker.focus();else $('search').focus();});
+render();
+</script></body></html>
