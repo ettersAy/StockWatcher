@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Stock Watch · 3-view dashboard</title><meta name="description" content="Compare 18 stocks in a compact matrix, look for notable moves, or focus on one chart.">
+<title>Stock Watch · 3-view dashboard</title><meta name="description" content="Compare 26 stocks in a compact matrix, look for notable moves, or focus on one chart.">
 <style>
 :root{color-scheme:dark;--bg:#0a101b;--panel:#111b2a;--subpanel:#152237;--rule:#29394f;--ink:#f0f6ff;--muted:#a6b7cf;--blue:#a9c7ff;--gain:#6ee7bc;--loss:#ff9ca9;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}*{box-sizing:border-box}
 body{margin:0;background:radial-gradient(ellipse at 72% 0%,#1b3050 0,transparent 42%) var(--bg);color:var(--ink);font:16px/1.4 system-ui,sans-serif}
@@ -24,7 +24,7 @@ table{border-collapse:collapse;width:100%;white-space:nowrap}th,td{text-align:ri
 @media(max-width:680px){.radar-setup,.radar-import{padding:10px 9px}.radar-meta{grid-template-columns:1fr}.radar-import textarea{max-width:100%}}
 </style></head>
 <body><main>
-<header class="head"><div><p class="eyebrow">Market desk / Watchlist</p><h1>Stock Watch</h1><p class="muted">18 companies, three ways to follow them.</p></div><span class="badge" id="feed-badge">USD · U.S. stocks</span></header>
+<header class="head"><div><p class="eyebrow">Market desk / Watchlist</p><h1>Stock Watch</h1><p class="muted">26 companies, three ways to follow them.</p></div><span class="badge" id="feed-badge">USD · U.S. stocks</span></header>
 <nav id="views" class="nav" role="tablist" aria-label="Watchlist views">
 <button id="tab-matrix" type="button" role="tab" aria-controls="panel-matrix" aria-selected="true"><b>Matrix</b><small>Compare prices and daily moves</small></button>
 <button id="tab-radar" type="button" role="tab" aria-controls="panel-radar" aria-selected="false" tabindex="-1"><b>Dip Radar</b><small>Spot moves worth a closer look</small></button>
@@ -53,6 +53,10 @@ table{border-collapse:collapse;width:100%;white-space:nowrap}th,td{text-align:ri
 const STOCKS=[
   ['NASDAQ','ANT','Anthropic','tech'],['NASDAQ','MSFT','Microsoft','tech'],['NASDAQ','GOOGL','Alphabet (Google)','tech'],
   ['NASDAQ','AAPL','Apple','tech'],['NASDAQ','NVDA','NVIDIA','tech'],['NASDAQ','AMZN','Amazon','tech'],
+  ['NASDAQ','IREN','IREN','tech'],['NASDAQ','APLD','Applied Digital','tech'],
+  ['NASDAQ','NBIS','Nebius','tech'],['NASDAQ','CRWV','CoreWeave','tech'],
+  ['NYSE','DELL','Dell Technologies','tech'],['NASDAQ','MU','Micron Technology','tech'],
+  ['NASDAQ','SNDK','Sandisk','tech'],['NASDAQ','AMD','Advanced Micro Devices','tech'],
   ['NASDAQ','META','Meta','tech'],['NASDAQ','TSLA','Tesla','tech'],['NYSE','BRK.B','Berkshire Hathaway','leaders'],
   ['NYSE','JPM','JPMorgan Chase','leaders'],['NYSE','V','Visa','leaders'],['NASDAQ','COST','Costco','leaders'],
   ['NYSE','PG','Procter & Gamble','leaders'],['NYSE','KO','Coca-Cola','leaders'],['NYSE','JNJ','Johnson & Johnson','leaders'],
@@ -186,7 +190,7 @@ function drawRadarRank(snapshot){
     const ordered=[...candidates].sort((a,b)=>sign*(a[key]-b[key])||a.stock.symbol.localeCompare(b.stock.symbol)).slice(0,5);
     return '<section class="lane" style="--accent:'+accent+'"><h3>'+name+'</h3><p class="muted">'+note+'</p>'+(ordered.length?'<ol class="rank-list">'+ordered.map(({stock,price:p,[key]:n})=>'<li><button type="button" data-stock="'+stock.key+'" aria-label="Open '+stock.company+' in Focus Desk"><span class="sym">'+stock.symbol+'</span><span class="rank-move '+(key==='near'?'flat':n>0?'gain':'loss')+'">'+(key==='near'?n.toFixed(1)+'% above':rankPct(n))+'</span><span class="company">'+stock.company+'</span><span class="muted rank-price">'+(p?price.format(p):'')+'</span></button></li>').join('')+'</ol>':'<p class="muted rank-empty">'+(covered?'No matches in the rows supplied.':'No data supplied for this metric.')+'</p>')+'</section>';
   };
-  host.innerHTML='<p class="muted radar-status">As of '+esc(snapshot.date)+' · Source: '+esc(snapshot.source)+' (user supplied)<br>Coverage: '+quotes.length+'/18 companies · 1D '+d+'/18 · 5D '+w+'/18 · 52-week low '+l+'/18'+(duplicates?' · '+duplicates+' duplicate '+(duplicates===1?'symbol excluded':'symbols excluded'):'')+'. Missing values are not ranked.</p><div class="radar-lanes">'+
+  host.innerHTML='<p class="muted radar-status">As of '+esc(snapshot.date)+' · Source: '+esc(snapshot.source)+' (user supplied)<br>Coverage: '+quotes.length+'/26 companies · 1D '+d+'/26 · 5D '+w+'/26 · 52-week low '+l+'/26'+(duplicates?' · '+duplicates+' duplicate '+(duplicates===1?'symbol excluded':'symbols excluded'):'')+'. Missing values are not ranked.</p><div class="radar-lanes">'+
     lane('Biggest 1D declines','Down on the supplied session','var(--loss)',quotes.filter(r=>r.day<0),'day',false,d)+
     lane('Biggest 5D declines','Down across the supplied five days','var(--loss)',quotes.filter(r=>r.week<0),'week',false,w)+
     lane('Leading today','Up on the supplied session','var(--gain)',quotes.filter(r=>r.day>0),'day',true,d)+
@@ -201,7 +205,7 @@ function downloadWatchlist(){
 }
 function renderRadar(){
   const target=$('radar-content');
-  target.innerHTML='<div class="radar-setup"><h3>Sort your 18 stocks in TradingView</h3><p class="muted">Download the symbol list, open your TradingView watchlist, import the .txt file, then sort the Change % column. This uses TradingView’s watchlist, not the quote embed in Matrix.</p><div class="radar-actions"><button id="radar-download" type="button" class="radar-cta">Download watchlist for TradingView</button><a href="https://www.tradingview.com/watchlists/" target="_blank" rel="noopener noreferrer">Open TradingView watchlist</a><a href="https://www.tradingview.com/support/solutions/43000487233-how-to-import-or-export-a-watchlist/" target="_blank" rel="noopener noreferrer">Import instructions</a></div></div>'+
+  target.innerHTML='<div class="radar-setup"><h3>Sort your 26 stocks in TradingView</h3><p class="muted">Download the symbol list, open your TradingView watchlist, import the .txt file, then sort the Change % column. This uses TradingView’s watchlist, not the quote embed in Matrix.</p><div class="radar-actions"><button id="radar-download" type="button" class="radar-cta">Download watchlist for TradingView</button><a href="https://www.tradingview.com/watchlists/" target="_blank" rel="noopener noreferrer">Open TradingView watchlist</a><a href="https://www.tradingview.com/support/solutions/43000487233-how-to-import-or-export-a-watchlist/" target="_blank" rel="noopener noreferrer">Import instructions</a></div></div>'+
   '<div class="radar-start" id="radar-result"><p class="muted radar-status">No quote snapshot loaded. The Matrix and charts show delayed quotes, but the embed does not provide data for custom rankings here.</p></div>'+
   '<details class="radar-import"><summary>Rank a CSV on this device</summary><p class="muted">Use quote data you’re allowed to use. This file is read in your browser only, never uploaded or saved. TradingView’s watchlist text file contains symbols only, not quotes.</p><p class="muted">Header example: <code>Symbol,Close,1D %,5D %,52w low</code>. Put percentages in percentage points, e.g. enter 2 for 2%. Close and 52w low should be in USD. You can omit metrics you do not have.</p><form id="radar-form"><div class="radar-meta"><label>Session date<input id="radar-date" type="date" required></label><label>Quote source<input id="radar-source" type="text" placeholder="Source name" maxlength="80" required></label></div><label>Choose CSV or TSV<input id="radar-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain"></label><label>Or paste data<textarea id="radar-text" rows="4" placeholder="Symbol,Close,1D %,5D %,52w low" maxlength="262144"></textarea></label><div class="radar-actions"><button type="submit">Rank watchlist</button><button id="radar-clear" type="button">Clear local data</button><span role="status" id="radar-error" class="muted"></span></div></form></details>';
   $('radar-download').addEventListener('click',downloadWatchlist);
