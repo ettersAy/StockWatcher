@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Stock Watch · 3-view dashboard</title><meta name="description" content="Compare 26 stocks in a compact matrix, look for notable moves, or focus on one chart.">
+<title>Stock Watch · 3-view dashboard</title><meta name="description" content="Compare 38 stocks in a compact matrix, look for notable moves, or focus on one chart.">
 <style>
 :root{color-scheme:dark;--bg:#0a101b;--panel:#111b2a;--subpanel:#152237;--rule:#29394f;--ink:#f0f6ff;--muted:#a6b7cf;--blue:#a9c7ff;--gain:#6ee7bc;--loss:#ff9ca9;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}*{box-sizing:border-box}
 body{margin:0;background:radial-gradient(ellipse at 72% 0%,#1b3050 0,transparent 42%) var(--bg);color:var(--ink);font:16px/1.4 system-ui,sans-serif}
@@ -24,7 +24,7 @@ table{border-collapse:collapse;width:100%;white-space:nowrap}th,td{text-align:ri
 @media(max-width:680px){.radar-setup,.radar-import{padding:10px 9px}.radar-meta{grid-template-columns:1fr}.radar-import textarea{max-width:100%}}
 </style></head>
 <body><main>
-<header class="head"><div><p class="eyebrow">Market desk / Watchlist</p><h1>Stock Watch</h1><p class="muted">26 companies, three ways to follow them.</p></div><span class="badge" id="feed-badge">USD · U.S. stocks</span></header>
+<header class="head"><div><p class="eyebrow">Market desk / Watchlist</p><h1>Stock Watch</h1><p class="muted">38 companies, three ways to follow them.</p></div><span class="badge" id="feed-badge">USD · U.S. stocks</span></header>
 <nav id="views" class="nav" role="tablist" aria-label="Watchlist views">
 <button id="tab-matrix" type="button" role="tab" aria-controls="panel-matrix" aria-selected="true"><b>Matrix</b><small>Compare prices and daily moves</small></button>
 <button id="tab-radar" type="button" role="tab" aria-controls="panel-radar" aria-selected="false" tabindex="-1"><b>Dip Radar</b><small>Spot moves worth a closer look</small></button>
@@ -61,6 +61,18 @@ const STOCKS=[
   ['NYSE','JPM','JPMorgan Chase','leaders'],['NYSE','V','Visa','leaders'],['NASDAQ','COST','Costco','leaders'],
   ['NYSE','PG','Procter & Gamble','leaders'],['NYSE','KO','Coca-Cola','leaders'],['NYSE','JNJ','Johnson & Johnson','leaders'],
   ['NYSE','XOM','Exxon Mobil','leaders'],['NYSE','CAT','Caterpillar','leaders'],['NYSE','UNP','Union Pacific','leaders'],
+  ['NYSE','ANF','Abercrombie & Fitch','leaders'],
+  ['NYSE','AMTM','Amentum Holdings','leaders'],
+  ['NYSE','DKS','Dick\'s Sporting Goods','leaders'],
+  ['NASDAQ','INSM','Insmed','leaders'],
+  ['NASDAQ','DLTR','Dollar Tree','leaders'],
+  ['NYSE','PINS','Pinterest','tech'],
+  ['NYSE','GLOB','Globant','tech'],
+  ['NASDAQ','SNY','Sanofi','leaders'],
+  ['NASDAQ','CTSH','Cognizant','tech'],
+  ['NYSE','ACN','Accenture','tech'],
+  ['NYSE','CRM','Salesforce','tech'],
+  ['NASDAQ','ADBE','Adobe','tech'],
 ].map(([exchange,symbol,company,group])=>({exchange,symbol,company,group,key:exchange+':'+symbol}));
 const $=id=>document.getElementById(id);
 const MODES=['matrix','radar','focus'];
