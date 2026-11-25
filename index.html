@@ -24,7 +24,12 @@ table{border-collapse:collapse;width:100%;white-space:nowrap}th,td{text-align:ri
 @media(max-width:680px){.radar-setup,.radar-import{padding:10px 9px}.radar-meta{grid-template-columns:1fr}.radar-import textarea{max-width:100%}}
 th[aria-sort="ascending"] button::after{content:" ↑"}
 th[aria-sort="descending"] button::after{content:" ↓"}
-.matrix-region td:nth-child(2),.matrix-region th:nth-child(2){text-align:left}
+.matrix-region table,.matrix-region th{background:#000;color:#b8b8b8}
+.matrix-region th{color:#9c9c9c}.matrix-region th[aria-sort] button{color:#eee}
+.matrix-region th,.matrix-region td{border-color:#3c3c3c}.matrix-region tbody tr:hover{background:#131313}
+.stock-name{display:flex;align-items:center;gap:8px}.stock-name .open{display:inline-flex;align-items:center;gap:8px}
+.stock-name .open:hover{text-decoration:underline}.stock-name img{width:24px;height:24px;border-radius:50%}
+.stock-link{display:inline-grid;place-items:center;width:24px;height:28px;color:inherit}.stock-link:hover{color:#fff}
 #refresh-quotes{padding:5px 9px;white-space:nowrap}
 @media(max-width:580px){.filters{flex-wrap:wrap}.filters label:first-child{flex-basis:100%}}
 </style></head>
@@ -40,7 +45,7 @@ th[aria-sort="descending"] button::after{content:" ↓"}
   <div class="matrix-region"><table aria-label="Watchlist quotes"><thead><tr id="matrix-head"></tr></thead><tbody id="matrix-rows"></tbody></table></div>
   <p class="message" id="matrix-empty" hidden>No matching stocks.</p>
   <div class="note stack"><button type="button" id="refresh-quotes">Refresh quotes</button><p class="muted" id="quote-status" role="status"></p></div>
-  <p class="muted note">Quotes from <a href="https://www.tradingview.com/markets/stocks-usa/" target="_blank" rel="noopener noreferrer">TradingView</a> may be delayed. Select a symbol to open its chart.</p>
+  <p class="muted note">Quotes from <a href="https://www.tradingview.com/markets/stocks-usa/" target="_blank" rel="noopener noreferrer">TradingView</a> may be delayed. The Matrix refreshes every 10 seconds while visible.</p>
 </section>
 <section class="panel" id="panel-radar" role="tabpanel" aria-labelledby="tab-radar" hidden>
   <header class="panel-title"><h2>Dip Radar</h2><p class="section-subtitle">Look for notable moves on this watchlist. A price drop is a reason to investigate, not a buy signal.</p></header>
@@ -101,13 +106,13 @@ function appendWidget(mount,type,settings,caption,fail,heading){
   root.append(script);return root;
 }
 const matrixColumns = {
-  symbol: 'Symbol', company: 'Company', close: 'Price', change_abs: 'Change $',
-  change: 'Change %', open: 'Open', high: 'High', low: 'Low',
+  company: 'Name', close: 'Value', change_abs: 'Change',
+  change: 'Chg%', open: 'Open', high: 'High', low: 'Low', 'close[1]': 'Prev',
 };
-const quoteFields = Object.keys(matrixColumns).filter(key => key !== 'symbol' && key !== 'company');
+const quoteFields = Object.keys(matrixColumns).filter(key => key !== 'company');
 const usd = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'});
 let matrixStocks = STOCKS;
-let sortColumn = 'symbol';
+let sortColumn = 'company';
 let sortDirection = 1;
 
 function renderMatrix() {
@@ -127,7 +132,9 @@ function renderMatrix() {
   });
   $('status').textContent = rows.length + ' of ' + STOCKS.length + ' companies';
   $('matrix-empty').hidden = rows.length > 0;
-  $('matrix-rows').innerHTML = rows.map(stock => {
+  const body = $('matrix-rows');
+  const focused = body.contains(document.activeElement) ? document.activeElement : null;
+  body.innerHTML = rows.map(stock => {
     const cells = quoteFields.map(field => {
       const value = stock[field];
       if (value == null) return '<td class="na">—</td>';
@@ -138,9 +145,19 @@ function renderMatrix() {
       }
       return '<td class="num">' + usd.format(value) + '</td>';
     }).join('');
-    return '<tr><td><button type="button" class="open sym" data-stock="' + stock.key + '">' +
-      stock.symbol + '</button></td><td class="company">' + stock.company + '</td>' + cells + '</tr>';
+    const logo = stock.logo ? '<img alt="" src="https://s3-symbol-logo.tradingview.com/' +
+      encodeURIComponent(stock.logo) + '.svg">' : '';
+    return `<tr><td><div class="stock-name">
+      <a class="stock-link" href="${href(stock)}" target="_blank" rel="noopener noreferrer"
+         aria-label="Open ${esc(stock.company)} on TradingView" title="Open on TradingView">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14 4h6v6m0-6L10 14m0-8H5v14h14v-5"/></svg>
+      </a><button type="button" class="open" data-stock="${stock.key}">${logo}${esc(stock.company)} (${stock.symbol})</button>
+    </div></td>${cells}</tr>`;
   }).join('');
+  if (focused) {
+    const selector = focused.matches('a') ? `a[href="${focused.href}"]` : `button[data-stock="${focused.dataset.stock}"]`;
+    body.querySelector(selector)?.focus({preventScroll: true});
+  }
   for (const header of $('matrix-head').children) {
     if (header.firstElementChild.dataset.column === sortColumn) {
       header.setAttribute('aria-sort', sortDirection === 1 ? 'ascending' : 'descending');
@@ -152,12 +169,13 @@ function renderMatrix() {
 
 async function refreshQuotes() {
   const button = $('refresh-quotes');
+  if (button.disabled || document.hidden || state.mode !== 'matrix') return;
   button.disabled = true;
   $('quote-status').textContent = 'Loading quotes…';
   try {
     const response = await fetch('https://scanner.tradingview.com/america/scan', {
       method: 'POST',
-      body: JSON.stringify({symbols: {tickers: STOCKS.map(stock => stock.key)}, columns: quoteFields}),
+      body: JSON.stringify({symbols: {tickers: STOCKS.map(stock => stock.key)}, columns: [...quoteFields, 'logoid']}),
       signal: AbortSignal.timeout(15000),
     });
     if (!response.ok) throw Error('HTTP ' + response.status);
@@ -168,7 +186,7 @@ async function refreshQuotes() {
       const quote = Object.fromEntries(quoteFields.map((field, i) =>
         [field, Number.isFinite(values?.[i]) ? values[i] : null]
       ));
-      return {...stock, ...quote};
+      return {...stock, ...quote, logo: values?.[quoteFields.length]};
     });
     const count = matrixStocks.filter(stock => stock.change != null).length;
     $('quote-status').textContent = 'Fetched ' + new Date().toLocaleTimeString() +
@@ -187,7 +205,7 @@ function openChart(s){
   $('chart-title').textContent=s.company;$('chart-symbol').textContent=s.key;$('chart-link').href=href(s);
   const chart=$('chart');chart.replaceChildren();
   state.renderedChart=s.key;
-  const ranges=s.symbol==='ANT'?['1d|1','1m|60']:['1d|1','1m|60','1y|1D'];
+  const ranges=s.symbol==='ANT'?['1d|1','1m|60']:['1d|1','1m|60','12m|1D'];
   appendWidget(chart,'symbol-overview',{symbols:[[s.company,s.key+'|1D']],chartOnly:false,width:'100%',height:'100%',locale:'en',colorTheme:'dark',isTransparent:false,autosize:true,showVolume:false,showMA:false,showDateRanges:true,showOHLC:true,chartType:'area',dateRanges:ranges},'Symbol chart',()=>{chart.innerHTML='<p class="error">The chart could not be loaded. Use the TradingView chart link above.</p>';},s.company+' TradingView chart');
 }
 function renderFocus(){
@@ -308,7 +326,7 @@ function selectMode(mode,{symbol,focusChart=false,focusTab=false}={}){
   if(mode!=='focus'&&state.renderedChart){$('chart').replaceChildren();state.renderedChart=null;}
   state.mode=mode;
   for(const name of MODES){const active=name===mode, tab=$('tab-'+name);tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;$('panel-'+name).hidden=!active;}
-  if(mode==='matrix')renderMatrix();
+  if(mode==='matrix'){renderMatrix();refreshQuotes();}
   if(mode==='radar'&&!state.radarLoaded)renderRadar();
   if(mode==='focus')renderFocus();
   if(focusChart)$('chart-title').focus(); else if(focusTab)$('tab-'+mode).focus();
@@ -346,6 +364,7 @@ $('search').addEventListener('input', renderMatrix);
 $('group').addEventListener('change', renderMatrix);
 $('movement').addEventListener('change', renderMatrix);
 $('refresh-quotes').addEventListener('click', refreshQuotes);
+document.addEventListener('visibilitychange', refreshQuotes);
+setInterval(refreshQuotes, 10_000);
 selectMode('matrix');
-refreshQuotes();
 </script></body></html>
