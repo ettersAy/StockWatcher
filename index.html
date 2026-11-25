@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Stock Watch · 3-view dashboard</title><meta name="description" content="Compare 38 stocks in a compact matrix, look for notable moves, or focus on one chart.">
+<title>StockWatcher · 3-view dashboard</title><meta name="description" content="Compare 38 stocks in a compact matrix, look for notable moves, or focus on one chart.">
 <style>
 :root{color-scheme:dark;--bg:#0a101b;--panel:#111b2a;--subpanel:#152237;--rule:#29394f;--ink:#f0f6ff;--muted:#a6b7cf;--blue:#a9c7ff;--gain:#6ee7bc;--loss:#ff9ca9;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}*{box-sizing:border-box}
 body{margin:0;background:radial-gradient(ellipse at 72% 0%,#1b3050 0,transparent 42%) var(--bg);color:var(--ink);font:16px/1.4 system-ui,sans-serif}
@@ -17,22 +17,30 @@ table{border-collapse:collapse;width:100%;white-space:nowrap}th,td{text-align:ri
 .note{padding:9px 15px;border-top:1px solid var(--rule)}.message{padding:20px 15px;border-top:1px solid var(--rule);font-size:14px;color:var(--muted)}.tv{border-top:1px solid var(--rule);min-height:55px}.tv .tradingview-widget-copyright,.chart .tradingview-widget-copyright{font-size:13px;color:var(--muted);padding:5px 12px;text-align:right}.tv iframe,.chart iframe{display:block;border:0;max-width:100%;background:#131722;color-scheme:normal}.chart{height:325px}.chart .tradingview-widget-container__widget{height:calc(100% - 28px)}.chartControl{margin-top:13px}.chartControl .bar h2:focus{outline:none}.charthead{display:flex;gap:8px;align-items:baseline}.charthead h2{font-size:20px}.chartcontrol-link,.close{font-size:13px}.close{padding:4px 8px;font-size:13px}.source{margin-top:10px}.stack{display:flex;gap:8px;align-items:center}.error{padding:15px;color:var(--muted);font-size:14px}.aux{font-size:13px;color:var(--muted);margin:13px 0 0}.aux summary{cursor:pointer;width:max-content;color:var(--blue)}.aux p{margin-top:6px}.hide{display:none}[hidden]{display:none!important}
 @media(max-width:780px){.minor{display:none}}@media(max-width:580px){main{padding:18px 9px}.head{align-items:start;margin-bottom:12px;display:block}.badge{margin-top:7px}.bar{display:block;padding:9px}.filters>label{flex:1;min-width:0}.filters select,.filters input{width:100%}.tools{justify-content:space-between;margin-top:7px}.tools p{text-align:left}.optional{display:none}th,td{padding:4px 8px}td:first-child,th:first-child{padding-left:9px}td:last-child,th:last-child{padding-right:9px}.open .company{display:block}.note{padding:7px 9px}.chartControl .bar{display:flex}.charthead{display:block}.chart{height:275px}}
 
-.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}.nav button{padding:9px 13px;text-align:left}.nav button[aria-selected=true]{background:#253c60;border-color:#a9c7ff}.nav b{display:block}.nav small{color:var(--muted);font-size:13px}.panel-title{padding:12px 15px;border-bottom:1px solid var(--rule)}.radar-lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px}.lane{background:#142133;border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:7px;padding:10px;min-width:0}.lane h3{margin:0 0 5px;font-size:16px}.radar-symbols{display:flex;flex-wrap:wrap;gap:6px;padding:10px 15px;border-top:1px solid var(--rule)}.radar-symbols button{width:auto;min-width:52px;padding:4px 6px}.radar-status{padding:10px 15px;border-top:1px solid var(--rule)}.focus-layout{display:grid;grid-template-columns:minmax(176px,224px) minmax(0,1fr)}.focus-sidebar{border-right:1px solid var(--rule);max-height:450px;overflow:auto;padding:5px}.focus-rows{display:grid;gap:2px}.focus-rows button{display:grid;grid-template-columns:53px 1fr;align-items:center;gap:5px;text-align:left;width:100%;padding:7px;background:transparent;border-color:transparent}.focus-rows button[aria-pressed=true]{background:#263e62;border-color:#4e709f}.focus-rows .company{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.focus-content{min-width:0}.focus-content .bar{display:flex;align-items:start;min-height:54px}.focus-content .chart{height:370px;border-top:1px solid var(--rule)}.focus-content .note{display:flex;justify-content:space-between;gap:5px}.mobile-picker{display:none}.matrix-chart-picker{padding:8px 15px;display:flex;gap:9px;align-items:center}.matrix-chart-picker .label{margin:0}.matrix-chart-picker select{width:min(100%,285px)}.matrix-section .bar{border-bottom:1px solid var(--rule)}.focus-content h2:focus-visible{outline:2px solid var(--blue);outline-offset:2px}.section-subtitle{color:var(--muted);font-size:14px}
-@media(max-width:680px){.nav small{display:none}.nav button{text-align:center;padding:8px 5px;font-size:14px}.nav{gap:5px;margin-bottom:8px}.radar-lanes{grid-template-columns:1fr;padding:8px}.focus-layout{display:block}.focus-sidebar{display:none}.mobile-picker{display:block;padding:8px 9px;border-bottom:1px solid var(--rule)}.mobile-picker select{width:100%}.focus-content .chart{height:320px}.focus-content .note{display:block}.panel-title{padding:9px}.radar-symbols,.radar-status{padding:9px}.matrix-chart-picker{padding:5px 9px}.matrix-chart-picker select{width:auto;flex:1}}
+.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}.nav button{padding:9px 13px;text-align:left}.nav button[aria-selected=true]{background:#253c60;border-color:#a9c7ff}.nav b{display:block}.nav small{color:var(--muted);font-size:13px}.panel-title{padding:12px 15px;border-bottom:1px solid var(--rule)}.radar-lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px}.lane{background:#142133;border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:7px;padding:10px;min-width:0}.lane h3{margin:0 0 5px;font-size:16px}.radar-symbols{display:flex;flex-wrap:wrap;gap:6px;padding:10px 15px;border-top:1px solid var(--rule)}.radar-symbols button{width:auto;min-width:52px;padding:4px 6px}.radar-status{padding:10px 15px;border-top:1px solid var(--rule)}.focus-layout{display:grid;grid-template-columns:minmax(176px,224px) minmax(0,1fr)}.focus-sidebar{border-right:1px solid var(--rule);max-height:450px;overflow:auto;padding:5px}.focus-rows{display:grid;gap:2px}.focus-rows button{display:grid;grid-template-columns:53px 1fr;align-items:center;gap:5px;text-align:left;width:100%;padding:7px;background:transparent;border-color:transparent}.focus-rows button[aria-pressed=true]{background:#263e62;border-color:#4e709f}.focus-rows .company{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.focus-content{min-width:0}.focus-content .bar{display:flex;align-items:start;min-height:54px}.focus-content .chart{height:370px;border-top:1px solid var(--rule)}.focus-content .note{display:flex;justify-content:space-between;gap:5px}.mobile-picker{display:none}.matrix-section .bar{border-bottom:1px solid var(--rule)}.focus-content h2:focus-visible{outline:2px solid var(--blue);outline-offset:2px}.section-subtitle{color:var(--muted);font-size:14px}
+@media(max-width:680px){.nav small{display:none}.nav button{text-align:center;padding:8px 5px;font-size:14px}.nav{gap:5px;margin-bottom:8px}.radar-lanes{grid-template-columns:1fr;padding:8px}.focus-layout{display:block}.focus-sidebar{display:none}.mobile-picker{display:block;padding:8px 9px;border-bottom:1px solid var(--rule)}.mobile-picker select{width:100%}.focus-content .chart{height:320px}.focus-content .note{display:block}.panel-title{padding:9px}.radar-symbols,.radar-status{padding:9px}}
 
 .radar-setup{padding:13px 15px}.radar-setup h3{margin:0 0 5px;font-size:17px}.radar-actions{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-top:10px;font-size:14px}.radar-actions button{padding:6px 10px}.radar-cta{background:#263e62;border-color:#597aab;color:#eff5ff;font-weight:650}.radar-import{padding:12px 15px;border-top:1px solid var(--rule)}.radar-import summary{cursor:pointer;color:var(--blue);font-weight:600}.radar-import p{margin:8px 0}.radar-import form{max-width:650px}.radar-import label{display:block;font-size:14px;margin-top:8px}.radar-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}.radar-import input,.radar-import textarea{display:block;width:100%;height:auto;min-height:35px;margin-top:4px;padding:6px 7px}.radar-import textarea{resize:vertical;border-radius:6px;font:14px var(--mono);background:var(--subpanel);color:var(--ink);border:1px solid var(--rule)}.rank-list{list-style:none;padding:0;margin:7px 0 0}.rank-list button{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:1px 7px;width:100%;text-align:left;background:transparent;border-width:1px 0 0;border-radius:0;padding:6px 1px}.rank-list button:hover{background:#1a2b44}.rank-list .company{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rank-move,.rank-price{text-align:right;font-variant-numeric:tabular-nums}.rank-move{font-weight:720;font-size:14px}.rank-empty{margin-top:9px}.radar-import code{word-break:break-word}
 @media(max-width:680px){.radar-setup,.radar-import{padding:10px 9px}.radar-meta{grid-template-columns:1fr}.radar-import textarea{max-width:100%}}
+th[aria-sort="ascending"] button::after{content:" ↑"}
+th[aria-sort="descending"] button::after{content:" ↓"}
+.matrix-region td:nth-child(2),.matrix-region th:nth-child(2){text-align:left}
+#refresh-quotes{padding:5px 9px;white-space:nowrap}
+@media(max-width:580px){.filters{flex-wrap:wrap}.filters label:first-child{flex-basis:100%}}
 </style></head>
 <body><main>
-<header class="head"><div><p class="eyebrow">Market desk / Watchlist</p><h1>Stock Watch</h1><p class="muted">38 companies, three ways to follow them.</p></div><span class="badge" id="feed-badge">USD · U.S. stocks</span></header>
+<header class="head"><div><p class="eyebrow">Market desk / Watchlist</p><h1>StockWatcher</h1><p class="muted">38 companies, three ways to follow them.</p></div><span class="badge" id="feed-badge">USD · U.S. stocks</span></header>
 <nav id="views" class="nav" role="tablist" aria-label="Watchlist views">
 <button id="tab-matrix" type="button" role="tab" aria-controls="panel-matrix" aria-selected="true"><b>Matrix</b><small>Compare prices and daily moves</small></button>
 <button id="tab-radar" type="button" role="tab" aria-controls="panel-radar" aria-selected="false" tabindex="-1"><b>Dip Radar</b><small>Spot moves worth a closer look</small></button>
 <button id="tab-focus" type="button" role="tab" aria-controls="panel-focus" aria-selected="false" tabindex="-1"><b>Focus Desk</b><small>Go deeper on one company</small></button>
 </nav>
 <section class="panel matrix-section" id="panel-matrix" role="tabpanel" aria-labelledby="tab-matrix">
-  <div class="bar"><div class="filters"><label><span class="sr">Search stock symbol or company</span><input id="search" type="search" placeholder="Symbol or company"></label><label><span class="sr">Filter by group</span><select id="group"><option value="">All companies</option><option value="tech">Tech &amp; growth</option><option value="leaders">Established leaders</option></select></label></div><div class="tools"><p class="muted" id="status" role="status">Preparing watchlist…</p></div></div>
-  <div id="matrix" class="matrix-region"></div><p class="muted note">Delayed quotes from TradingView. Compare prices, daily changes, and each session’s open, high and low where available.</p>
+  <div class="bar"><div class="filters"><label><span class="sr">Search stock symbol or company</span><input id="search" type="search" placeholder="Symbol or company"></label><label><span class="sr">Filter by group</span><select id="group"><option value="">All companies</option><option value="tech">Tech &amp; growth</option><option value="leaders">Established leaders</option></select></label><label><span class="sr">Daily movement</span><select id="movement"><option value="all">All</option><option value="up">Up</option><option value="down">Down</option></select></label></div><div class="tools"><p class="muted" id="status" role="status">Preparing watchlist…</p></div></div>
+  <div class="matrix-region"><table aria-label="Watchlist quotes"><thead><tr id="matrix-head"></tr></thead><tbody id="matrix-rows"></tbody></table></div>
+  <p class="message" id="matrix-empty" hidden>No matching stocks.</p>
+  <div class="note stack"><button type="button" id="refresh-quotes">Refresh quotes</button><p class="muted" id="quote-status" role="status"></p></div>
+  <p class="muted note">Quotes from <a href="https://www.tradingview.com/markets/stocks-usa/" target="_blank" rel="noopener noreferrer">TradingView</a> may be delayed. Select a symbol to open its chart.</p>
 </section>
 <section class="panel" id="panel-radar" role="tabpanel" aria-labelledby="tab-radar" hidden>
   <header class="panel-title"><h2>Dip Radar</h2><p class="section-subtitle">Look for notable moves on this watchlist. A price drop is a reason to investigate, not a buy signal.</p></header>
@@ -76,18 +84,14 @@ const STOCKS=[
 ].map(([exchange,symbol,company,group])=>({exchange,symbol,company,group,key:exchange+':'+symbol}));
 const $=id=>document.getElementById(id);
 const MODES=['matrix','radar','focus'];
-const state={mode:'matrix',selected:'NASDAQ:NVDA',matrixKey:null,radarLoaded:false,renderedChart:null};
+const state={mode:'matrix',selected:'NASDAQ:NVDA',radarLoaded:false,renderedChart:null};
 const href=s=>'https://www.tradingview.com/symbols/'+s.exchange+'-'+s.symbol+'/';
-function result(){
-  const q=$('search').value.trim().toLowerCase(), g=$('group').value;
-  return STOCKS.filter(s=>(!g||s.group===g)&&(!q||(s.key+' '+s.company).toLowerCase().includes(q)));
-}
 function appendWidget(mount,type,settings,caption,fail,heading){
   const root=document.createElement('div');root.className='tradingview-widget-container';
   root.style.height='100%';
   const frame=document.createElement('div');frame.className='tradingview-widget-container__widget';
   const credits=document.createElement('div');credits.className='tradingview-widget-copyright';
-  const link=document.createElement('a');link.href=type==='market-quotes'?'https://www.tradingview.com/markets/':'https://www.tradingview.com/';link.rel='noopener noreferrer';link.target='_blank';link.textContent=caption;
+  const link=document.createElement('a');link.href='https://www.tradingview.com/';link.rel='noopener noreferrer';link.target='_blank';link.textContent=caption;
   credits.append(link,document.createTextNode(' by TradingView'));root.append(frame,credits);mount.append(root);
   const script=document.createElement('script');script.src='https://s3.tradingview.com/external-embedding/embed-widget-'+type+'.js';
   script.async=true;script.textContent=JSON.stringify(settings);
@@ -96,34 +100,88 @@ function appendWidget(mount,type,settings,caption,fail,heading){
   script.addEventListener('error',()=>{observer.disconnect();if(mount.contains(root))fail();},{once:true});
   root.append(script);return root;
 }
-function chartPicker(list){
-  const shell=document.createElement('div');shell.className='matrix-chart-picker';
-  const l=document.createElement('label');l.htmlFor='chart-picker';l.textContent='Focus chart'; l.className='label';
-  const select=document.createElement('select');select.id='chart-picker';
-  select.innerHTML='<option value="">Choose a company</option>'+list.map(s=>'<option value="'+s.key+'">'+s.symbol+' · '+s.company+'</option>').join('');
-  select.addEventListener('change',()=>{const s=list.find(x=>x.key===select.value);if(s)selectMode('focus',{symbol:s.key,focusChart:true});});
-  shell.append(l,select);return shell;
+const matrixColumns = {
+  symbol: 'Symbol', company: 'Company', close: 'Price', change_abs: 'Change $',
+  change: 'Change %', open: 'Open', high: 'High', low: 'Low',
+};
+const quoteFields = Object.keys(matrixColumns).filter(key => key !== 'symbol' && key !== 'company');
+const usd = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'});
+let matrixStocks = STOCKS;
+let sortColumn = 'symbol';
+let sortDirection = 1;
+
+function renderMatrix() {
+  const search = $('search').value.trim().toLowerCase();
+  const group = $('group').value;
+  const movement = $('movement').value;
+  const rows = matrixStocks.filter(stock =>
+    (!group || group === stock.group) &&
+    (stock.key + ' ' + stock.company).toLowerCase().includes(search) &&
+    (movement === 'all' || (movement === 'up' ? stock.change > 0 : stock.change < 0))
+  );
+  rows.sort((a, b) => {
+    const left = a[sortColumn], right = b[sortColumn];
+    if (left == null || right == null) return Number(left == null) - Number(right == null);
+    const order = typeof left === 'string' ? left.localeCompare(right) : left - right;
+    return order * sortDirection || a.symbol.localeCompare(b.symbol);
+  });
+  $('status').textContent = rows.length + ' of ' + STOCKS.length + ' companies';
+  $('matrix-empty').hidden = rows.length > 0;
+  $('matrix-rows').innerHTML = rows.map(stock => {
+    const cells = quoteFields.map(field => {
+      const value = stock[field];
+      if (value == null) return '<td class="na">—</td>';
+      if (field === 'change' || field === 'change_abs') {
+        const color = value > 0 ? 'gain' : value < 0 ? 'loss' : 'flat';
+        const text = field === 'change' ? rankPct(value) : (value > 0 ? '+' : '') + usd.format(value);
+        return '<td class="num ' + color + '">' + text + '</td>';
+      }
+      return '<td class="num">' + usd.format(value) + '</td>';
+    }).join('');
+    return '<tr><td><button type="button" class="open sym" data-stock="' + stock.key + '">' +
+      stock.symbol + '</button></td><td class="company">' + stock.company + '</td>' + cells + '</tr>';
+  }).join('');
+  for (const header of $('matrix-head').children) {
+    if (header.firstElementChild.dataset.column === sortColumn) {
+      header.setAttribute('aria-sort', sortDirection === 1 ? 'ascending' : 'descending');
+    } else {
+      header.removeAttribute('aria-sort');
+    }
+  }
 }
-function drawEmbed(list){
-  const matrix=$('matrix');matrix.replaceChildren();
-  // Keep this separate from the provider's table. It does not read or scrape cross-origin content.
-  matrix.append(chartPicker(list));
-  const host=document.createElement('div');host.className='tv';matrix.append(host);
-  const groups=[['tech','Tech & growth'],['leaders','Established leaders']].map(([group,name])=>({name,symbols:list.filter(s=>s.group===group).map(s=>({name:s.key,displayName:s.company}))})).filter(group=>group.symbols.length);
-  const config={title:'Stock Watch',width:'100%',height:Math.max(138,76+groups.length*35+list.length*37),showSymbolLogo:true,locale:'en',colorTheme:'dark',isTransparent:false,symbolsGroups:groups};
-  const fallback=()=>{
-    host.innerHTML='<p class="error">TradingView quotes could not be loaded. You can still open a chart or use a direct symbol link.</p><div class="note">'+list.map(s=>'<a href="'+href(s)+'" target="_blank" rel="noopener noreferrer" class="sym">'+s.symbol+'</a> ').join('')+'</div>';
-  };
-  appendWidget(host,'market-quotes',config,'Market data',fallback,'TradingView stock quote matrix');
-}
-function render(){
-  const list=result(), matrix=$('matrix');
-  $('status').textContent=list.length+' of '+STOCKS.length+' companies';
-  const key=list.map(s=>s.key).join(',');
-  if(key===state.matrixKey)return;
-  state.matrixKey=key;
-  if(!list.length){matrix.innerHTML='<p class="message">No matching stocks. Try a different symbol or group.</p>';return;}
-  drawEmbed(list);
+
+async function refreshQuotes() {
+  const button = $('refresh-quotes');
+  button.disabled = true;
+  $('quote-status').textContent = 'Loading quotes…';
+  try {
+    const response = await fetch('https://scanner.tradingview.com/america/scan', {
+      method: 'POST',
+      body: JSON.stringify({symbols: {tickers: STOCKS.map(stock => stock.key)}, columns: quoteFields}),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) throw Error('HTTP ' + response.status);
+    const {data} = await response.json();
+    const quotes = new Map(data.map(row => [row.s, row.d]));
+    matrixStocks = STOCKS.map(stock => {
+      const values = quotes.get(stock.key);
+      const quote = Object.fromEntries(quoteFields.map((field, i) =>
+        [field, Number.isFinite(values?.[i]) ? values[i] : null]
+      ));
+      return {...stock, ...quote};
+    });
+    const count = matrixStocks.filter(stock => stock.change != null).length;
+    $('quote-status').textContent = 'Fetched ' + new Date().toLocaleTimeString() +
+      ' · Daily change available for ' + count + ' of ' + STOCKS.length + '.';
+    renderMatrix();
+  } catch (error) {
+    console.error('Matrix quote refresh failed', error);
+    $('quote-status').textContent = matrixStocks === STOCKS
+      ? 'Quotes unavailable. Try refreshing.'
+      : 'Refresh failed. Showing the last loaded quotes.';
+  } finally {
+    button.disabled = false;
+  }
 }
 function openChart(s){
   $('chart-title').textContent=s.company;$('chart-symbol').textContent=s.key;$('chart-link').href=href(s);
@@ -217,8 +275,8 @@ function downloadWatchlist(){
 }
 function renderRadar(){
   const target=$('radar-content');
-  target.innerHTML='<div class="radar-setup"><h3>Sort your 26 stocks in TradingView</h3><p class="muted">Download the symbol list, open your TradingView watchlist, import the .txt file, then sort the Change % column. This uses TradingView’s watchlist, not the quote embed in Matrix.</p><div class="radar-actions"><button id="radar-download" type="button" class="radar-cta">Download watchlist for TradingView</button><a href="https://www.tradingview.com/watchlists/" target="_blank" rel="noopener noreferrer">Open TradingView watchlist</a><a href="https://www.tradingview.com/support/solutions/43000487233-how-to-import-or-export-a-watchlist/" target="_blank" rel="noopener noreferrer">Import instructions</a></div></div>'+
-  '<div class="radar-start" id="radar-result"><p class="muted radar-status">No quote snapshot loaded. The Matrix and charts show delayed quotes, but the embed does not provide data for custom rankings here.</p></div>'+
+  target.innerHTML='<div class="radar-setup"><h3>Sort your watchlist in TradingView</h3><p class="muted">Download the symbol list, open your TradingView watchlist, import the .txt file, then sort the Change % column. You can also sort daily moves in Matrix.</p><div class="radar-actions"><button id="radar-download" type="button" class="radar-cta">Download watchlist for TradingView</button><a href="https://www.tradingview.com/watchlists/" target="_blank" rel="noopener noreferrer">Open TradingView watchlist</a><a href="https://www.tradingview.com/support/solutions/43000487233-how-to-import-or-export-a-watchlist/" target="_blank" rel="noopener noreferrer">Import instructions</a></div></div>'+
+  '<div class="radar-start" id="radar-result"><p class="muted radar-status">No quote snapshot loaded. Import a CSV below to rank stocks across multiple time periods.</p></div>'+
   '<details class="radar-import"><summary>Rank a CSV on this device</summary><p class="muted">Use quote data you’re allowed to use. This file is read in your browser only, never uploaded or saved. TradingView’s watchlist text file contains symbols only, not quotes.</p><p class="muted">Header example: <code>Symbol,Close,1D %,5D %,52w low</code>. Put percentages in percentage points, e.g. enter 2 for 2%. Close and 52w low should be in USD. You can omit metrics you do not have.</p><form id="radar-form"><div class="radar-meta"><label>Session date<input id="radar-date" type="date" required></label><label>Quote source<input id="radar-source" type="text" placeholder="Source name" maxlength="80" required></label></div><label>Choose CSV or TSV<input id="radar-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain"></label><label>Or paste data<textarea id="radar-text" rows="4" placeholder="Symbol,Close,1D %,5D %,52w low" maxlength="262144"></textarea></label><div class="radar-actions"><button type="submit">Rank watchlist</button><button id="radar-clear" type="button">Clear local data</button><span role="status" id="radar-error" class="muted"></span></div></form></details>';
   $('radar-download').addEventListener('click',downloadWatchlist);
   const original=$('radar-result').innerHTML;
@@ -250,7 +308,7 @@ function selectMode(mode,{symbol,focusChart=false,focusTab=false}={}){
   if(mode!=='focus'&&state.renderedChart){$('chart').replaceChildren();state.renderedChart=null;}
   state.mode=mode;
   for(const name of MODES){const active=name===mode, tab=$('tab-'+name);tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;$('panel-'+name).hidden=!active;}
-  if(mode==='matrix'){render();const picker=$('chart-picker');if(picker)picker.value='';}
+  if(mode==='matrix')renderMatrix();
   if(mode==='radar'&&!state.radarLoaded)renderRadar();
   if(mode==='focus')renderFocus();
   if(focusChart)$('chart-title').focus(); else if(focusTab)$('tab-'+mode).focus();
@@ -269,8 +327,25 @@ for(const mode of MODES){
     if(next){event.preventDefault();selectMode(next,{focusTab:true});}
   });
 }
-let searchTimer;
-$('search').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(render,180);});
-$('group').addEventListener('change',()=>{clearTimeout(searchTimer);render();});
+$('matrix-head').innerHTML = Object.entries(matrixColumns).map(([key, label]) =>
+  '<th scope="col"><button type="button" data-column="' + key + '">' + label + '</button></th>'
+).join('');
+$('matrix-head').addEventListener('click', event => {
+  const button = event.target.closest('button');
+  if (!button) return;
+  const column = button.dataset.column;
+  sortDirection = column === sortColumn ? -sortDirection : quoteFields.includes(column) ? -1 : 1;
+  sortColumn = column;
+  renderMatrix();
+});
+$('matrix-rows').addEventListener('click', event => {
+  const button = event.target.closest('button[data-stock]');
+  if (button) selectMode('focus', {symbol: button.dataset.stock, focusChart: true});
+});
+$('search').addEventListener('input', renderMatrix);
+$('group').addEventListener('change', renderMatrix);
+$('movement').addEventListener('change', renderMatrix);
+$('refresh-quotes').addEventListener('click', refreshQuotes);
 selectMode('matrix');
+refreshQuotes();
 </script></body></html>
